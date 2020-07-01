@@ -87,8 +87,11 @@ _Authors : Artem Butko, Nam Yo Seb,  Dmitriy Samakaev_
 #### 2.2 Распределение ролей
 <a name="2.2"></a> 
 Artem Butko -- Frontend & Algorithm
+
 Nam Yo Seb -- Documentation & Algorithm
+
 Dmitriy Samakaev -- Testing & Algorithm
+
 _Вся команда равномерно распределяет нагрузку между собой, внося равноценный вклад в разработку программы_
 ## 3. Особенности реализации
 <a name="3"></a> 
