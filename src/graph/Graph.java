@@ -1,11 +1,22 @@
 package graph;
 
+/**
+ * @Toshi:
+ * Надо бы сделать поле g, сделать приватным и придумать методы получения значений, как думаете?
+ */
+
 import java.lang.*;
 import java.util.*;
 
+enum typeOfError{
+    LOOP,
+    FOREST;
+}
 
 public class Graph {
-    Map<Integer, Vertex> g; // Edge - гипотетически
+
+
+    Map<Integer, Vertex> g;                     // Надо бы сделать поле приватным и реализовать методы, как думаете?
 
     public Graph(){}
 
@@ -15,8 +26,16 @@ public class Graph {
     public boolean removeEdge(int vFrom, int vTo){return true;}
     public boolean replace(){return true;} // Метод для "Песочницы"
     public boolean isEmpty(){return true;}
-    public boolean isForest(){return true;} // Возможно не понадобится
-    public boolean isLoop(){return true;} // Возомжно не понадобится
+
+    public void gHasError(typeOfError e){               //Псевдо обработчик ошибок
+        if(e == typeOfError.FOREST){
+            System.out.println("TIPO GRAPH IS A FOREST");
+        }
+
+        else if(e == typeOfError.LOOP){
+            System.out.println("TIPO GRAPH ETO LOOP");
+        }
+    }
 
 
 }

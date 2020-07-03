@@ -1,30 +1,44 @@
 package graph;
 
+/**
+ * @Dimon&Toshi: класс вершин
+ * @Toshi Добавил цвета и методы под них
+ */
+
+enum vColor{
+    WHITE,
+    GREY,
+    BLACK;
+}
+
 public class Vertex {
+
     private int name;
     private int sort_index;
-    private boolean visited = false;
+    private vColor color = vColor.WHITE;
     public int[] vNext; // Потомки
+
+
 
     public void setIndex(int index){
         sort_index = index;
     }
-    //private ColorVertex clr; потом для визуализации
 
-    public void changeVisit(){
-        if (visited)
-            visited = false;
-        else
-            visited = true;
+    public void changeColor(){
+        if (color == vColor.WHITE)
+            color = vColor.GREY;
+        else if (color == vColor.GREY)
+            color = vColor.BLACK;
     }
 
-
-
-    public boolean isVisited(){
-        if(visited)
-            return true;
+    public vColor getColor(){
+        if (color == vColor.WHITE)
+             return vColor.WHITE;
+        else if (color == vColor.GREY)
+            return vColor.GREY;
         else
-            return false;
+            return vColor.BLACK;
     }
+
 
 }

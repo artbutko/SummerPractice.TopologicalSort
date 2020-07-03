@@ -1,6 +1,6 @@
 package graph;
 /**
-@author Класс для визуализации перехода по ребрам;
+@Dimon&Toshi Класс для визуализации перехода по ребрам;
  */
 public class Edge {
     private int vFrom;
