@@ -4,24 +4,42 @@ package graph;
  * @Dimon&Toshi: класс вершин
  * @Toshi Добавил цвета и методы под них
  */
+import java.util.*;
 
-enum vColor{
-    WHITE,
-    GREY,
-    BLACK;
-}
+public class Vertex{
 
-public class Vertex {
-
-    private int name;
-    private int sort_index;
+    private String name;
+    private int sortIndex;
     private vColor color = vColor.WHITE;
-    public int[] vNext; // Потомки
+    private ArrayList<Vertex> vNext; // Потомки
+
+    public Vertex(String name){
+        this.name = name;
+        sortIndex = 0;
+        color = vColor.WHITE;
+        vNext = new ArrayList<Vertex>();
+    }
 
 
+    public String getName(){
+        return name;
+    }
+
+    //Может быть ошибка, хз
+    public void addVNext(Vertex vertex){
+        vNext.add(vertex);
+    }
+
+    public void removeVNext(Vertex vertex){
+                vNext.remove(vertex);
+    }
+
+    public ArrayList<Vertex> getVNext(){
+        return vNext;
+    }
 
     public void setIndex(int index){
-        sort_index = index;
+        sortIndex = index;
     }
 
     public void changeColor(){

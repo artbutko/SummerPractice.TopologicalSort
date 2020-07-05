@@ -3,11 +3,19 @@ package graph;
 @Dimon&Toshi Класс для визуализации перехода по ребрам;
  */
 public class Edge {
-    private int vFrom;
-    private int vTo;
+    private Vertex vFrom;
+    private Vertex vTo;
 
-    public Edge(){
-
+    public Edge(Vertex vFrom, Vertex vTo){
+        this.vFrom = vFrom;
+        this.vTo = vTo;
     }
 
+    public Vertex getVFrom() {
+        return vFrom;
+    }
+
+    public Vertex getVTo() {
+        return vTo;
+    }
 }
