@@ -1,60 +1,102 @@
 package graph;
 
 /**
- * @Toshi:
- * Надо бы сделать поле g, сделать приватным и придумать методы получения значений, как думаете?
+ * Класс графа.
+ * Реализованы структуры данных и стандартные методы для работы с графом:
+ *  Для хранения графа используется структура Map<String, Vertex> graph
+ *  Для хранения ребер используется структура ArrayList<Edge> edges
+ *  Методы:
+ *      isEmpty(); getMap(); getElement(); addVertex(); addEdge(); removeEdge;
+ *      removeVertex(); getVertexes(); getEdges();
+ * А так же были написаны псевдо обработчик ошибок gHasError();
+ * @author NamYoSeb
+ * @version 0.1
+ * #TODO Обработка ошибок
  */
 
 import java.lang.*;
 import java.util.*;
 
-
-
 public class Graph {
 
+    /**
+     * Поле графа
+     */
+    private Map<String, Vertex> graph;
 
-    private Map<String, Vertex> graph;                     // Надо бы сделать поле приватным и реализовать методы, как думаете?
+    /**
+     * Поле ребер
+     */
     private ArrayList<Edge> edges;
 
+    /**
+     * Конструктор класса
+     * Не знаю как реализовать дефолтный конструктор класса.
+     */
     public Graph(){}
-
-    public boolean addVertex(int v){return true;}
-    public boolean removeVertex(int v){return true;}
-    public boolean addEdge(int vFrom, int vTo){return true;}
-    public boolean removeEdge(int vFrom, int vTo){return true;}
+    
     public boolean replace(){return true;} // Метод для "Песочницы"
-    public boolean isEmpty(){return true;}
 
+    /**
+     * Метод, проверяющий граф на пустоту
+     */
+    public boolean isEmpty(){
+        if(graph.isEmpty())
+            return true;
+        else 
+            return false;
+    }
+
+    /**
+     * Метод получение графа (словаря)
+     */
     public Map<String, Vertex> getMap(){
         return graph;
     }
 
-    public Vertex getElem(String key){
+    /**
+     * Метод получение элемента графа (элемента по ключу словаря)
+     */
+    public Vertex getElement(String key){
         return graph.get(key);
     }
 
-
+    /**
+     * Метод добавления вершины в граф
+     */
     public void addVertex(String name){
         Vertex vertex = new Vertex(name);
         graph.put(name, vertex);
     }
 
+    /**
+     * Метод добавления ребра в граф и список ребер
+     */
     public void addEdge(String vFrom, String vTo){
-        Vertex vertexFrom = this.getElem(vFrom);
-        Vertex vertexTo = this.getElem(vTo);
+        Vertex vertexFrom = this.getElement(vFrom);
+        Vertex vertexTo = this.getElement(vTo);
         Edge edge = new Edge(vertexFrom, vertexTo);
         edges.add(edge);
         vertexFrom.addVNext(vertexTo);
     }
 
+    /**
+     * Метод удаления ребра в графе
+     */
     public void removeEdge(Vertex vertexFrom, Vertex vertexTo){
-        this.getElem(vertexFrom.getName()).removeVNext(vertexTo);
+        this.getElement(vertexFrom.getName()).removeVNext(vertexTo);
     }
 
+    /**
+     * Метод удаления вершины в графе
+     */
     public void removeVertex(Vertex vertex){
         graph.remove(vertex.getName());
     }
 
+    /**
+     * Метод получения списка вершин графа
+     */
     public ArrayList<String> getVertexes(){
         ArrayList<String> vertexes = new ArrayList<String>();
         for(String vertex: graph.keySet()){
@@ -63,6 +105,9 @@ public class Graph {
         return vertexes;
     }
 
+    /**
+     * Метод получения списка ребер графа
+     */
     public ArrayList<String> getEdges(){
         ArrayList<String> edges = new ArrayList<>();
         for(Edge edge: this.edges){
@@ -71,7 +116,10 @@ public class Graph {
         return edges;
     }
 
-    public void gHasError(typeOfError e){               //Псевдо обработчик ошибок
+    /**
+     * Псевдо метод для обработки ошибок
+     */
+    public void gHasError(typeOfError e){
         if(e == typeOfError.FOREST){
             System.out.println("TIPO GRAPH IS A FOREST");
         }
