@@ -1,7 +1,6 @@
 package UserInteractions;
 
 import java.util.Scanner;
-import graph.*;
 /**
  * Класс ввода графа при помощи определяющей строки.
  * @author artembutko
@@ -17,14 +16,12 @@ public class InputByString
     /** Поле определения Графа*/
     private String definition;
 
-    Graph graph;
 
     /** Конструктор класса, можно пока создавать граф здесь */
     public InputByString()
     {
         this.input = new Scanner(System.in);
         this.definition = new String("");
-        this.graph = new Graph();
     }
 
     /** Функция ввода определения графа */
@@ -52,18 +49,20 @@ public class InputByString
         String[] edges = definition.substring(definition.indexOf('}') + 3, definition.length() - 2).split(",");
         for (String vertex : vertexes)
         {
-            System.out.println(vertex);
+
             /*
             #TODO Граф.addVertex(v: vertex);
              */
-            graph.addVertex(vertex);
+            //System.out.println(vertex);
+            /*
+            #TODO Граф.addVertex(v: vertex);
+             */
         }
         for (String edge : edges)
         {
             edge = edge.replaceAll("\\(|\\)", "");
+
             graph.addEdge(edge.split(";")[0], edge.split(";")[1]);
-
-
             //System.out.println(edge);
             /*
             #TODO Граф.addEdge(vFrom: edge.split(";")[0], vTo: edge.split(";")[1]);
