@@ -1,11 +1,11 @@
-package graph;
+package Digraph;
 
 /**
  * Класс вершин
  * Реализованы структура данных и методы для работы с вершинами.
  * Для хранения имени вершины используется поле String name
  * Для хранения индекса(порядка) после сортировки используется поле int sortIndex
- * Для хранения цвета вершины используется vColor color, который является классом перечислений enum
+ * Для хранения цвета вершины используется VertexColor color, который является классом перечислений enum
  * Для хранения "потомков" используется структура ArrayList<Vertex> vNext
  * Методы:
  *      getName(); addVNext(); removeVNext(); getVNext(); setIndex(); changeColor(); getColor();
@@ -17,12 +17,12 @@ package graph;
 
 import java.util.*;
 
-public class Vertex{
-
+public class Vertex
+{
     /**
      * Поле хранения имени вершины
      */
-    private String name;
+    private final String name;
 
     /**
      * Поле хранения порядка после сортировки
@@ -32,77 +32,78 @@ public class Vertex{
     /**
      * Поле для цвета вершины
      */
-    private vColor color = vColor.WHITE;
+    private VertexColor color;
 
     /**
      * Поле для хранения потомков
      */
-    private ArrayList<Vertex> vNext; // Потомки
+    private final ArrayList<Vertex> vNext;
 
     /**
      * Конструктор класса
      */
-    public Vertex(String name){
+    public Vertex(String name)
+    {
         this.name = name;
         sortIndex = 0;
-        color = vColor.WHITE;
+        color = VertexColor.WHITE;
         vNext = new ArrayList<Vertex>();
     }
 
     /**
      * Метод получения имени вершины
      */
-    public String getName(){
+    public String getName()
+    {
         return name;
     }
 
     /**
      * Метод добавления потомка вершины
      */
-    public void addVNext(Vertex vertex){
+    public void addVNext(Vertex vertex)
+    {
         vNext.add(vertex);
     }
 
     /**
      * Метод удаления потомка вершины
      */
-    public void removeVNext(Vertex vertex){
-                vNext.remove(vertex);
+    public void removeVNext(Vertex vertex)
+    {
+        vNext.remove(vertex);
     }
 
     /**
      * Метод получения списка потомков вершины
      */
-    public ArrayList<Vertex> getVNext(){
+    public ArrayList<Vertex> getVNext()
+    {
         return vNext;
     }
 
     /**
      * Метод присваивания номера порядка вершины
      */
-    public void setIndex(int index){
+    public void setIndex(int index)
+    {
         sortIndex = index;
     }
 
     /**
      * Метод изменения цвета вершины
      */
-    public void changeColor(){
-        if (color == vColor.WHITE)
-            color = vColor.GREY;
-        else if (color == vColor.GREY)
-            color = vColor.BLACK;
+    public void changeColor()
+    {
+        if (color == VertexColor.WHITE) color = VertexColor.GREY;
+        color = VertexColor.BLACK;
     }
 
     /**
      * Метод получения цвета вершины
      */
-    public vColor getColor(){
-        if (color == vColor.WHITE)
-             return vColor.WHITE;
-        else if (color == vColor.GREY)
-            return vColor.GREY;
-        else
-            return vColor.BLACK;
+    public VertexColor getColor()
+    {
+        return color;
     }
 }

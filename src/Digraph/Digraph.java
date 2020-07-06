@@ -1,4 +1,4 @@
-package graph;
+package Digraph;
 
 /**
  * Класс графа.
@@ -17,62 +17,70 @@ package graph;
 import java.lang.*;
 import java.util.*;
 
-public class Graph {
-
+public class Digraph
+{
     /**
      * Поле графа
      */
-    private Map<String, Vertex> graph;
+    private final Map<String, Vertex> graph;
 
     /**
      * Поле ребер
      */
-    private ArrayList<Edge> edges;
+    private final ArrayList<Edge> edges;
 
     /**
      * Конструктор класса
-     * Не знаю как реализовать дефолтный конструктор класса.
+     * #TODO default constructor
      */
-    public Graph(){}
+    public Digraph()
+    {
+        graph = new HashMap<String, Vertex>();
+        edges = new ArrayList<Edge>();
+    }
     
     public boolean replace(){return true;} // Метод для "Песочницы"
 
     /**
      * Метод, проверяющий граф на пустоту
      */
-    public boolean isEmpty(){
-        if(graph.isEmpty())
-            return true;
-        else 
-            return false;
+    public boolean isEmpty()
+    {
+        return graph.isEmpty();
     }
 
     /**
      * Метод получение графа (словаря)
      */
-    public Map<String, Vertex> getMap(){
+    public Map<String, Vertex> getMap()
+    {
         return graph;
     }
 
     /**
      * Метод получение элемента графа (элемента по ключу словаря)
      */
-    public Vertex getElement(String key){
+    public Vertex getElement(String key)
+    {
         return graph.get(key);
     }
 
     /**
      * Метод добавления вершины в граф
      */
-    public void addVertex(String name){
-        Vertex vertex = new Vertex(name);
-        graph.put(name, vertex);
+    public void addVertex(String name)
+    {
+        if (name != null) {
+            Vertex vertex = new Vertex(name);
+            graph.put(name, vertex);
+        }
     }
 
     /**
      * Метод добавления ребра в граф и список ребер
      */
-    public void addEdge(String vFrom, String vTo){
+    public void addEdge(String vFrom, String vTo)
+    {
         Vertex vertexFrom = this.getElement(vFrom);
         Vertex vertexTo = this.getElement(vTo);
         Edge edge = new Edge(vertexFrom, vertexTo);
@@ -83,23 +91,27 @@ public class Graph {
     /**
      * Метод удаления ребра в графе
      */
-    public void removeEdge(Vertex vertexFrom, Vertex vertexTo){
+    public void removeEdge(Vertex vertexFrom, Vertex vertexTo)
+    {
         this.getElement(vertexFrom.getName()).removeVNext(vertexTo);
     }
 
     /**
      * Метод удаления вершины в графе
      */
-    public void removeVertex(Vertex vertex){
+    public void removeVertex(Vertex vertex)
+    {
         graph.remove(vertex.getName());
     }
 
     /**
      * Метод получения списка вершин графа
      */
-    public ArrayList<String> getVertexes(){
+    public ArrayList<String> getVertexes()
+    {
         ArrayList<String> vertexes = new ArrayList<String>();
-        for(String vertex: graph.keySet()){
+        for(String vertex: graph.keySet())
+        {
             vertexes.add(vertex);
         }
         return vertexes;
@@ -108,7 +120,8 @@ public class Graph {
     /**
      * Метод получения списка ребер графа
      */
-    public ArrayList<String> getEdges(){
+    public ArrayList<String> getEdges()
+    {
         ArrayList<String> edges = new ArrayList<>();
         for(Edge edge: this.edges){
             edges.add(edge.getVFrom().getName() + ";" + edge.getVTo().getName());
@@ -119,15 +132,14 @@ public class Graph {
     /**
      * Псевдо метод для обработки ошибок
      */
-    public void gHasError(typeOfError e){
-        if(e == typeOfError.FOREST){
+    public void gHasError(ErrorType e)
+    {
+        if(e == ErrorType.FOREST){
             System.out.println("TIPO GRAPH IS A FOREST");
         }
 
-        else if(e == typeOfError.LOOP){
+        else if(e == ErrorType.LOOP){
             System.out.println("TIPO GRAPH ETO LOOP");
         }
     }
-
-
 }
