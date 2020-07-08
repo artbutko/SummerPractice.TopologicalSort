@@ -109,12 +109,7 @@ public class Digraph
      */
     public ArrayList<String> getVertexes()
     {
-        ArrayList<String> vertexes = new ArrayList<String>();
-        for(String vertex: graph.keySet())
-        {
-            vertexes.add(vertex);
-        }
-        return vertexes;
+        return new ArrayList<String>(graph.keySet());
     }
 
     /**
@@ -124,7 +119,7 @@ public class Digraph
     {
         ArrayList<String> edges = new ArrayList<>();
         for(Edge edge: this.edges){
-            edges.add(edge.getVFrom().getName() + ";" + edge.getVTo().getName());
+            edges.add(edge.vGetSource().getName() + ";" + edge.vGetStock().getName());
         }
         return edges;
     }

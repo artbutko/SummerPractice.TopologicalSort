@@ -44,6 +44,11 @@ public class Vertex {
     private final ArrayList<Vertex> vNext;
 
     /**
+     * Поля для хранения координат
+     */
+    public double x = 0, y = 0;
+
+    /**
      * Конструктор класса
      */
     public Vertex(String name) {
@@ -54,6 +59,14 @@ public class Vertex {
         vNext = new ArrayList<Vertex>();
     }
 
+    public Vertex(int x, int y)
+    {
+        this.name = "";
+        sortIndex = 0;
+        point = new Point(x, y);
+        color = Color.WHITE;
+        vNext = new ArrayList<Vertex>();
+    }
 
     /**
      * Метод получения имени вершины
@@ -86,8 +99,41 @@ public class Vertex {
     /**
      * Метод присваивания номера порядка вершины
      */
+
+
     public void setIndex(int index) {
         sortIndex = index;
+    }
+
+    /**
+     * Метод, возвращающий текущие координаты
+     *
+     */
+    public Point getPoint() {
+        return point;
+    }
+
+    /** Метод, возвращающий координаты X */
+    public double getX()
+    {
+        return point.getX();
+    }
+
+    /** Метод, возвращающий координаты Y */
+    public double getY()
+    {
+        return point.getY();
+    }
+
+    /**
+     * Метод, устанавливающий новые координаты
+     * @param point новая координата
+     */
+    public void setPoint(Point point)
+    {
+        this.x = point.x;
+        this.y = point.y;
+        this.point = point;
     }
 
     /**
