@@ -40,6 +40,11 @@ public class Vertex
     private final ArrayList<Vertex> vNext;
 
     /**
+     * Поля для хранения координат
+     */
+    public double x = 0, y = 0;
+
+    /**
      * Конструктор класса
      */
     public Vertex(String name)
@@ -50,6 +55,18 @@ public class Vertex
         vNext = new ArrayList<Vertex>();
     }
 
+<<<<<<< Updated upstream
+=======
+    public Vertex(int x, int y)
+    {
+        this.name = "";
+        sortIndex = 0;
+        point = new Point(x, y);
+        color = Color.WHITE;
+        vNext = new ArrayList<Vertex>();
+    }
+
+>>>>>>> Stashed changes
     /**
      * Метод получения имени вершины
      */
@@ -85,9 +102,45 @@ public class Vertex
     /**
      * Метод присваивания номера порядка вершины
      */
+<<<<<<< Updated upstream
     public void setIndex(int index)
     {
         sortIndex = index;
+=======
+    public void setIndex(int index) {
+        sortIndex = index;
+    }
+
+    /**
+     * Метод, возвращающий текущие координаты
+     *
+     */
+    public Point getPoint() {
+        return point;
+    }
+
+    /** Метод, возвращающий координаты X */
+    public double getX()
+    {
+        return point.getX();
+    }
+
+    /** Метод, возвращающий координаты Y */
+    public double getY()
+    {
+        return point.getY();
+    }
+
+    /**
+     * Метод, устанавливающий новые координаты
+     * @param point новая координата
+     */
+    public void setPoint(Point point)
+    {
+        this.x = point.x;
+        this.y = point.y;
+        this.point = point;
+>>>>>>> Stashed changes
     }
 
     /**
