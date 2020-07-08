@@ -24,6 +24,7 @@ package Algorithm;
 
 import Digraph.*;
 
+import java.awt.*;
 import java.lang.*;
 import java.util.*;
 
@@ -46,12 +47,12 @@ public class Algorithm
      */
     private void helpSort(Vertex vCurrent)
     {
-        if(vCurrent.getColor() == VertexColor.GREY)
+        if(vCurrent.getColor() == Color.GRAY)
         {
             /* Если вершина серая, то значит цикл в графе, сортировка невозможна */
             digraph.gHasError(ErrorType.LOOP);
         }
-        else if (vCurrent.getColor() != VertexColor.BLACK)
+        else if (vCurrent.getColor() != Color.BLACK)
         {
             vCurrent.changeColor();
             /* Если нет пути (конец пути), то пушим эту вершину в стек */
@@ -74,7 +75,7 @@ public class Algorithm
         for (String key: digraph.getMap().keySet())
         {
             Vertex vertex = digraph.getElement(key);
-            if(vertex.getColor() == VertexColor.WHITE)
+            if(vertex.getColor() == Color.WHITE)
                 helpSort(vertex);
         }
         while(!vStack.isEmpty())  sortResult.add(vStack.pop().getName());
