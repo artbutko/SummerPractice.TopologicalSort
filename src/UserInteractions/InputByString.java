@@ -1,40 +1,42 @@
 package UserInteractions;
 
+import Algorithm.Algorithm;
+import Digraph.Digraph;
+
+import javax.swing.*;
+import java.util.Arrays;
 import java.util.Scanner;
 
 /**
  * Класс ввода графа при помощи определяющей строки.
  * @author artembutko
  * @version 0.1
- * #TODO поле графа, создание графа
  */
 
 public class InputByString
 {
-    /** Поле ввода */
-    private final Scanner input;
+
+    /** Результирующая строка */
+    public final String result;
 
     /** Поле определения Графа*/
-    private String definition;
+    private final String definition;
 
-    /** Конструктор класса, можно пока создавать граф здесь */
-    public InputByString()
-    {
-        this.input = new Scanner(System.in);
-        this.definition = new String("");
-        // this.graph = new Graph();
-    }
+    /** Экземпляр ориентированного графа */
+    private final Digraph graph;
 
-    /** Функция ввода определения графа */
-    public void defOfGraph()
+    /** Конструктор класса, можно пока создавать граф здесь
+     * @param definition -- определение графа*/
+    public InputByString(String definition)
     {
-        System.out.print("Give definition of the Oriented Graph.\n" +
-                "example: ({1,2,3},{(1;2),(2;3)})\n" +
-                "input : ");
-        definition = input.nextLine().replaceAll("\\s+","");
-        System.out.println(definition);
-        if (check()) parse();
-        else System.out.print("wrong string format");
+        this.graph = new Digraph();
+        this.definition = definition.replaceAll("\\s+","");
+        if (check())
+        {
+            parse();
+            result = getInformation();
+        }
+        else result = "Неверная строка";
     }
 
     /** Проверка корректности определения графа */
@@ -49,19 +51,13 @@ public class InputByString
         String[] vertexes = definition.substring(2, definition.indexOf('}')).split(",");
         String[] edges = definition.substring(definition.indexOf('}') + 3, definition.length() - 2).split(",");
         for (String vertex : vertexes)
-        {
-            //System.out.println(vertex);
-            /*
-            #TODO Граф.addVertex(v: vertex);
-             */
-        }
-        for (String edge : edges)
-        {
-            edge = edge.replaceAll("\\(|\\)", "");
-            //System.out.println(edge);
-            /*
-            #TODO Граф.addEdge(vFrom: edge.split(";")[0], vTo: edge.split(";")[1]);
-             */
-        }
+            graph.addVertex(vertex);
+        Arrays.stream(edges).map(edge -> edge.replaceAll("\\(|\\)", "")).forEach(edge -> graph.addEdge(edge.split(";")[0], edge.split(";")[1]));
+    }
+
+    private String getInformation()
+    {
+        Algorithm alg = new Algorithm(graph);
+        return "Результат сортировки: " + alg.sort();
     }
 }
