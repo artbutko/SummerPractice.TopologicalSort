@@ -5,14 +5,12 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.Random;
 
 /**
  * Костяк GUI приложения визуализации топологической сортировки
  * @author artbutko
- * @version 0.2
- * #TODO привязать кнопки к методам, рисование на поле, удаление. P.S Перегружать методы взаимодействия по кнопке.
- * #TODO массив "кругов" (вершин) с координатами и радиусами вершин, аналогично с ребрами графа.
+ * @version 0.4
+ * #TODO удаление ребер, привязка к структуре (Digraph), вывод ответа окном.
  */
 
 public class App extends JFrame
@@ -137,12 +135,10 @@ public class App extends JFrame
                 System.out.println(e.getActionCommand());
                 canvas.setPressedButton(buttonRemEdge);
             }
-            else if(e.getSource() == buttonSort)
-            {
+            else if(e.getSource() == buttonSort) {
                 System.out.println(e.getActionCommand());
                 canvas.setPressedButton(buttonSort);
             }
-            canvas.drawProcess();
         }
     }
 
@@ -171,6 +167,7 @@ public class App extends JFrame
 
         frame.getContentPane().add(toolBar, BorderLayout.PAGE_START);
         frame.getContentPane().add(canvas, BorderLayout.CENTER);
+        canvas.drawProcess();
 
         /* window settings */
         frame.setPreferredSize(new Dimension(720, 480));
@@ -185,15 +182,42 @@ class DrawPanel extends JPanel
 {
     private boolean  isAddVertex, isRemVertex, isAddEdge, isRemEdge, isSort;
 
-    int deleteIndex = -1;
+    private boolean isTwoPoints = false;
+    Point point1 = new Point();
+    Point point2 = new Point();
+
+    private class Line
+    {
+        private final Point point1;
+        private final Point point2;
+
+        public Line(Point point1, Point point2)
+        {
+            this.point1 = point1;
+            this.point2 = point2;
+        }
+
+        public Point getPoint1()
+        {
+            return point1;
+        }
+
+        public Point getPoint2()
+        {
+            return point2;
+        }
+    }
+
+    int vDeleteIndex = -1;
+    int eDeleteIndex = -1;
 
     public ArrayList<Point> points;
-    public ArrayList<BasicStroke> strokes;
+    public ArrayList<Line> strokes;
 
     DrawPanel()
     {
         points = new ArrayList<Point>();
-        strokes = new ArrayList<BasicStroke>();
+        strokes = new ArrayList<Line>();
     }
 
     private void setButtonsLocked()
@@ -233,6 +257,81 @@ class DrawPanel extends JPanel
         }
     }
 
+    private void lineCreator(MouseEvent event)
+    {
+        int x = event.getX();
+        int y = event.getY();
+        if (!isTwoPoints)
+        {
+            for (Point point : points)
+                if (x < point.getX() + 25 & x > point.getX() - 25 & y < point.getY() + 25 & y > point.getY() - 25)
+                {
+                    point1 = new Point((int) point.getX(), (int) point.getY());
+                    isTwoPoints = true;
+                    break;
+                }
+            System.out.println("Point 1");
+        }
+        else
+        {
+            point2 = point1;
+            for (Point point : points)
+                if (x < point.getX() + 25 & x > point.getX() - 25 & y < point.getY() + 25 & y > point.getY() - 25)
+                {
+                    point1 = new Point((int) point.getX(), (int) point.getY());
+                    strokes.add(new Line(point1, point2));
+                    System.out.println("Point 2");
+                    isTwoPoints = false;
+                    break;
+                }
+        }
+    }
+
+    private void lineRemover(MouseEvent event)
+    {
+        int x = event.getX();
+        int y = event.getY();
+        if (!isTwoPoints)
+        {
+            for (Point point : points)
+                if (x < point.getX() + 25 & x > point.getX() - 25 & y < point.getY() + 25 & y > point.getY() - 25)
+                {
+                    point1 = new Point((int) point.getX(), (int) point.getY());
+                    isTwoPoints = true;
+                    break;
+                }
+            System.out.println("Point 1");
+        }
+        else
+        {
+            point2 = point1;
+            for (Point point : points)
+                if (x < point.getX() + 25 & x > point.getX() - 25 & y < point.getY() + 25 & y > point.getY() - 25)
+                {
+                    point1 = new Point((int) point.getX(), (int) point.getY());
+                    for (int i = 0; i < strokes.size(); ++i)
+                    {
+                        System.out.println("Point1 = " + strokes.get(i).point1.getX() + " " + strokes.get(i).point1.getY());
+                        System.out.println("Point2 = " + strokes.get(i).point2.getX() + " " + strokes.get(i).point2.getY());
+                        System.out.println("New p1 = " + point1.getX() + " " + point1.getY());
+                        System.out.println("New p2 = " + point2.getX() + " " + point2.getY());
+
+                        //#TODO нормальный поиск двух точек
+                        /*if (true) {
+                            System.out.println("Point searched!");
+                            eDeleteIndex = i;
+                            break;
+                        }*/
+                    }
+                    System.out.println("Point 2");
+                    isTwoPoints = false;
+                    break;
+                }
+        }
+    }
+
+    //#TODO глобальный баг с кнопками
+
     public void drawProcess()
     {
         addMouseListener(new MouseAdapter() {
@@ -241,29 +340,37 @@ class DrawPanel extends JPanel
             {
                 if(isAddVertex)
                 {
-                    points.add(new Point(e.getX() - 10, e.getY() - 10));
+                    isTwoPoints = false;
+                    points.add(new Point(e.getX(), e.getY()));
                     repaint();
                 }
                 else if (isRemVertex)
                 {
-                    int x = e.getX();
-                    int y = e.getY();
+                    //#TODO удаление ицендентных ребер
+                    isTwoPoints = false;
+
+                    int x = e.getX() - 10;
+                    int y = e.getY() - 10;
                     for (int i = 0; i < points.size(); ++i)
                         //#TODO исправить баг с удалением вершины
                         if (x < points.get(i).getX() + 25 & x > points.get(i).getX() - 25 & y < points.get(i).getY() + 25 & y > points.get(i).getY() - 25)
                         {
-                            deleteIndex = i;
+                            vDeleteIndex = i;
                             break;
                         }
                     repaint();
                 }
                 else if(isAddEdge)
                 {
-
+                    //#TODO исправить баг с некорректным рисованием после повторного нажатия кнопки "[+] ребро"
+                    lineCreator(e);
+                    repaint();
                 }
                 else if(isRemEdge)
                 {
-
+                    //#TODO баг с точками
+                    lineRemover(e);
+                    repaint();
                 }
 
             }
@@ -273,33 +380,38 @@ class DrawPanel extends JPanel
     private void drawPoints(Graphics g)
     {
         Graphics2D gPoints = (Graphics2D) g;
-        if (deleteIndex != -1)
+        if (vDeleteIndex != -1)
         {
             gPoints.setColor(Color.white);
-            gPoints.fillOval(points.get(deleteIndex).x, points.get(deleteIndex).y, 20, 20);
-            points.remove(deleteIndex);
-            deleteIndex = -1;
+            gPoints.fillOval(points.get(vDeleteIndex).x, points.get(vDeleteIndex).y, 20, 20);
+            points.remove(vDeleteIndex);
+            vDeleteIndex = -1;
         }
         gPoints.setColor(Color.blue);
-        for (Point point : points)
+        for (int i = 0; i < points.size(); ++i)
         {
-            gPoints.fillOval(point.x, point.y, 20, 20);
-            gPoints.drawString("1", point.x, point.y);
+            gPoints.fillOval(points.get(i).x, points.get(i).y, 20, 20);
+            //#TODO индексы что-то
+            gPoints.drawString(""+ i + "", points.get(i).x, points.get(i).y);
         }
     }
-
 
     private void drawStrokes(Graphics g)
     {
         Graphics2D gStrokes = (Graphics2D) g;
         gStrokes.setColor(Color.gray);
-        var bs1 = new BasicStroke(1, BasicStroke.CAP_BUTT,
-                BasicStroke.JOIN_ROUND, 1.0f, new float[]{2f, 0f, 2f}, 2f);
-        for (BasicStroke stroke : strokes)
+        if (eDeleteIndex != -1)
         {
-            gStrokes.setStroke(bs1);
-            gStrokes.drawLine(20, 80, 250, 80);
+            gStrokes.setColor(Color.red);
+            gStrokes.drawLine(strokes.get(eDeleteIndex).getPoint1().x + 10, strokes.get(eDeleteIndex).getPoint1().y + 10, strokes.get(eDeleteIndex).getPoint2().x + 10, strokes.get(eDeleteIndex).getPoint2().y + 10);
+            strokes.remove(eDeleteIndex);
+            eDeleteIndex = -1;
         }
+        for (Line stroke : strokes)
+        {
+            gStrokes.drawLine(stroke.getPoint1().x + 10, stroke.getPoint1().y + 10, stroke.getPoint2().x + 10, stroke.getPoint2().y + 10);
+        }
+
     }
 
     @Override
