@@ -15,10 +15,13 @@ package Digraph;
  * мало доступной информации.
  */
 
+import java.awt.*;
 import java.util.*;
 
 public class Vertex
 {
+
+    public Point point;
     /**
      * Поле хранения имени вершины
      */

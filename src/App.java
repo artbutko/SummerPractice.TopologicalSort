@@ -1,3 +1,5 @@
+import Digraph.*;
+import Algorithm.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -213,11 +215,56 @@ class DrawPanel extends JPanel
 
     public ArrayList<Point> points;
     public ArrayList<Line> strokes;
+    public ArrayList<String> names;
+
+
+    public Digraph digraph;
+
+    int k = 0;
+
+    private void qwer()
+    {
+        System.out.println(names);
+
+        for(Point p : points)
+        {
+            digraph.addVertex(names.get(k));
+            digraph.getMap().get(names.get(k)).point = p;
+            k += 1;
+        }
+
+        for(String key: digraph.getMap().keySet())
+        {
+            for(Line line : strokes)
+            {
+                if (digraph.getMap().get(key).point.x == line.point1.x)
+                {
+                    for(Point p : points) {
+                        if (p.x == line.point2.x) {
+                            for (String key2 : digraph.getMap().keySet()) {
+                                if (digraph.getMap().get(key2).point.x == p.x) {
+                                    digraph.getMap().get(key).addVNext(digraph.getMap().get(key2));
+                                    digraph.addEdge(key2, key);
+                                    System.out.println(key + " " + key2);
+                                }
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+        System.out.println("sorted!");
+
+        System.out.println(digraph.getEdges());
+    }
 
     DrawPanel()
     {
+        digraph = new Digraph();
         points = new ArrayList<Point>();
         strokes = new ArrayList<Line>();
+        names = new ArrayList<String>();
     }
 
     private void setButtonsLocked()
@@ -317,11 +364,15 @@ class DrawPanel extends JPanel
                         System.out.println("New p2 = " + point2.getX() + " " + point2.getY());
 
                         //#TODO нормальный поиск двух точек
-                        /*if (true) {
-                            System.out.println("Point searched!");
-                            eDeleteIndex = i;
+                        if ((strokes.get(i).point1.getX() == point1.getX() && strokes.get(i).point2.getX() == point2.getX() &&
+                                strokes.get(i).point1.getY() == point1.getY() && strokes.get(i).point2.getY() == point2.getY()) ||
+                                strokes.get(i).point1.getX() == point2.getX() && strokes.get(i).point2.getX() == point1.getX() &&
+                                        strokes.get(i).point1.getY() == point2.getY() && strokes.get(i).point2.getY() == point1.getY()) {
+                            System.out.println("Point found!");
+                            strokes.remove(strokes.get(i));
+
                             break;
-                        }*/
+                        }
                     }
                     System.out.println("Point 2");
                     isTwoPoints = false;
@@ -330,8 +381,23 @@ class DrawPanel extends JPanel
         }
     }
 
-    //#TODO глобальный баг с кнопками
+    //KOSTYL'
+    private void incLineRemover(Point point)
+    {
+        int i = -1;
+        for(Line stroke : strokes) {
+            if ((stroke.point1.getX() == point.getX() && stroke.point1.getY() == point.getY()) ||
+                    (stroke.point2.getX() == point.getX() && stroke.point2.getY() == point.getY())) {
 
+                strokes.remove(stroke);
+                break;
+            }
+            i++;
+        }
+    }
+
+    //#TODO глобальный баг с кнопками
+    int index = 0;
     public void drawProcess()
     {
         addMouseListener(new MouseAdapter() {
@@ -342,6 +408,8 @@ class DrawPanel extends JPanel
                 {
                     isTwoPoints = false;
                     points.add(new Point(e.getX(), e.getY()));
+                    names.add("" + index);
+                    index++;
                     repaint();
                 }
                 else if (isRemVertex)
@@ -351,10 +419,14 @@ class DrawPanel extends JPanel
 
                     int x = e.getX() - 10;
                     int y = e.getY() - 10;
+
+
                     for (int i = 0; i < points.size(); ++i)
                         //#TODO исправить баг с удалением вершины
                         if (x < points.get(i).getX() + 25 & x > points.get(i).getX() - 25 & y < points.get(i).getY() + 25 & y > points.get(i).getY() - 25)
                         {
+                            for(int j = 0; j < points.size(); j++)
+                                incLineRemover(points.get(i));
                             vDeleteIndex = i;
                             break;
                         }
@@ -372,7 +444,13 @@ class DrawPanel extends JPanel
                     lineRemover(e);
                     repaint();
                 }
-
+                else if(isSort)
+                {
+                    qwer();
+                    Algorithm algorithm = new Algorithm(digraph);
+                    JOptionPane.showConfirmDialog(null, algorithm.sort(), "Результат сортировки", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE);
+                    System.exit(0);
+                }
             }
         });
     }
@@ -400,13 +478,7 @@ class DrawPanel extends JPanel
     {
         Graphics2D gStrokes = (Graphics2D) g;
         gStrokes.setColor(Color.gray);
-        if (eDeleteIndex != -1)
-        {
-            gStrokes.setColor(Color.red);
-            gStrokes.drawLine(strokes.get(eDeleteIndex).getPoint1().x + 10, strokes.get(eDeleteIndex).getPoint1().y + 10, strokes.get(eDeleteIndex).getPoint2().x + 10, strokes.get(eDeleteIndex).getPoint2().y + 10);
-            strokes.remove(eDeleteIndex);
-            eDeleteIndex = -1;
-        }
+
         for (Line stroke : strokes)
         {
             gStrokes.drawLine(stroke.getPoint1().x + 10, stroke.getPoint1().y + 10, stroke.getPoint2().x + 10, stroke.getPoint2().y + 10);
@@ -422,5 +494,3 @@ class DrawPanel extends JPanel
         drawPoints(g);
     }
 }
-
-
