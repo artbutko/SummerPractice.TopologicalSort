@@ -8,7 +8,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
 
 /**
  * Костяк GUI приложения визуализации топологической сортировки
@@ -23,6 +22,8 @@ public class App extends JFrame
     private JPanel toolBar;
     private DrawPanel canvas;
     private final Listener listener = new Listener();
+
+
 
     /** кнопки нужны во всем суперклассе UserInteractions.App */
     JButton buttonAddVert;
@@ -150,7 +151,7 @@ public class App extends JFrame
     {
         canvas = new DrawPanel();
         canvas.setLayout(new FlowLayout());
-        canvas.setBackground(new java.awt.Color(255, 255, 255));
+        canvas.setBackground(new java.awt.Color(246, 180, 180));
     }
 
     public void createGUI()
@@ -179,6 +180,7 @@ public class App extends JFrame
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
+
 }
 
 class DrawPanel extends JPanel
@@ -192,12 +194,11 @@ class DrawPanel extends JPanel
     /** Поле для MouseEvent, для фиксации двух кликов мыши */
     private boolean isTwoVertices = false;
 
-    ArrayList<String> labels;
     /** Конструктор класса */
     DrawPanel()
     {
         digraph = new Digraph();
-        labels = new ArrayList<String>();
+
         edgeBuff = new Edge(null, null);
     }
 
@@ -263,7 +264,7 @@ class DrawPanel extends JPanel
             for (String key : digraph.getMap().keySet())
                 if (x < digraph.getElement(key).getX() + 25 & x > digraph.getElement(key).getX() - 25 & y < digraph.getElement(key).getY() + 25 & y >digraph.getElement(key).getY() - 25)
                 {
-                    // Опять же не очень история
+
                     edgeBuff.vSetStock(digraph.getElement(key));
                     digraph.addEdge(edgeBuff);
                     edgeBuff.vGetSource().addVNext(edgeBuff.vGetStock());
@@ -291,7 +292,6 @@ class DrawPanel extends JPanel
                     break;
                 }
             System.out.println("Vertex 1");
-
         }
         else
         {
@@ -320,12 +320,8 @@ class DrawPanel extends JPanel
                     isTwoVertices = false;
 
                     String definition = JOptionPane.showInputDialog("Введите имя вершины");
-
                     digraph.addVertex(definition);
                     digraph.getElement(definition).setPoint(new Point(event.getX(), event.getY()));
-
-
-                    labels.add(definition);
                     index++;
 
                     repaint();
@@ -337,14 +333,12 @@ class DrawPanel extends JPanel
                     int x = event.getX() - 10;
                     int y = event.getY() - 10;
 
-
                     for (String key : digraph.getMap().keySet()){
                         if (x < digraph.getElement(key).getX() + 25 & x > digraph.getElement(key).getX() - 25 & y < digraph.getElement(key).getY() + 25 & y >digraph.getElement(key).getY() - 25)
                         {
                             digraph.removeVertex(digraph.getElement(key));
                             break;
                         }
-
 
                     repaint();
                      }
@@ -362,17 +356,11 @@ class DrawPanel extends JPanel
 
                 else if(isSort)
                 {
-                    for(String key : digraph.getMap().keySet()){
-                        for(int i = 0; i < digraph.getElement(key).getVNext().size(); i++)
-                         System.out.println(key + " pedik#"+ i + " " + digraph.getElement(key).getVNext().get(i).getName());
-                    }
-
                     Algorithm algorithm = new Algorithm(digraph);
+
                     JOptionPane.showConfirmDialog(null, algorithm.sort(), "Результат сортировки", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE);
-                    System.exit(0);
+                    repaint();
                 }
-
-
             }
         });
     }
@@ -380,9 +368,10 @@ class DrawPanel extends JPanel
     private void drawVertices(Graphics g)
     {
         Graphics2D gVertices = (Graphics2D) g;
-        gVertices.setColor(Color.blue);
+
 
         for (String key: digraph.getMap().keySet()){
+            gVertices.setColor(digraph.getElement(key).getColor());
             gVertices.fillOval((int)digraph.getElement(key).getX(), (int)digraph.getElement(key).getY(), 20, 20);
             gVertices.drawString(digraph.getElement(key).getName(), (int)digraph.getElement(key).getX(), (int)digraph.getElement(key).getY());
         }
@@ -403,18 +392,21 @@ class DrawPanel extends JPanel
        for (Edge edge: digraph.getEdges())
         {
             gEdges.drawLine((int)edge.vGetSource().getX() + 10, (int)edge.vGetSource().getY() + 10, (int)edge.vGetStock().getX() + 10, (int)edge.vGetStock().getY() + 10);
+            // Нарисовать стрелку
             System.out.println((int)edge.vGetSource().getX() + 10 + " " + (int)edge.vGetSource().getY() + 10 + " " + (int)edge.vGetStock().getX() + 10 + " " + (int)edge.vGetStock().getY() + 10);
         }
 
-
-
     }
 
+    private void drawResult(Graphics g){
+
+    }
     @Override
     public void paintComponent(Graphics g)
     {
         super.paintComponent(g);
         drawLines(g);
         drawVertices(g);
+        drawResult(g);
     }
 }
