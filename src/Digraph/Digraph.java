@@ -189,4 +189,6 @@ public class Digraph
             System.out.println("TIPO GRAPH ETO LOOP");
         }
     }
+
+
 }
