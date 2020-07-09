@@ -9,7 +9,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.stream.IntStream;
 
 /**
  * Костяк GUI приложения визуализации топологической сортировки
@@ -193,61 +192,15 @@ class DrawPanel extends JPanel
     /** Поле для MouseEvent, для фиксации двух кликов мыши */
     private boolean isTwoVertices = false;
 
-    /** Поля для двух вершин, у которых будет добавлено (удалено) ребро */
-    Vertex vertex = new Vertex("");
-
-    /** Поля с вершинами, ребрами, именами вершин */
-    public ArrayList<Vertex> vertices;
-    public ArrayList<Edge> edges;
-    public ArrayList<String> labels;
-
+    ArrayList<String> labels;
     /** Конструктор класса */
     DrawPanel()
     {
         digraph = new Digraph();
-        vertices = new ArrayList<Vertex>();
-        edges = new ArrayList<Edge>();
         labels = new ArrayList<String>();
+        edgeBuff = new Edge(null, null);
     }
 
-
-
-    int k = 0;
-
-    /*private void structBuilder()
-    {
-        for(Vertex p : vertices)
-        {
-            digraph.addVertex(labels.get(k));
-            digraph.getMap().get(labels.get(k)).point = p;
-            k += 1;
-        }
-
-        for(String key: digraph.getMap().keySet())
-        {
-            for(Line line : edges)
-            {
-                if (digraph.getMap().get(key).point.x == line.point1.x)
-                {
-                    for(Vertex p : vertices) {
-                        if (p.x == line.point2.x) {
-                            for (String key2 : digraph.getMap().keySet()) {
-                                if (digraph.getMap().get(key2).point.x == p.x) {
-                                    digraph.getMap().get(key).addVNext(digraph.getMap().get(key2));
-                                    digraph.addEdge(key2, key);
-                                    System.out.println(key + " " + key2);
-                                }
-                            }
-
-                        }
-                    }
-                }
-            }
-        }
-        System.out.println("sorted!");
-
-        System.out.println(digraph.getEdges());
-    }*/
 
     private void setButtonsLocked()
     {
@@ -286,6 +239,7 @@ class DrawPanel extends JPanel
         }
     }
 
+    public Edge edgeBuff;
 
     private void lineCreator(MouseEvent event)
     {
@@ -294,28 +248,25 @@ class DrawPanel extends JPanel
 
         if (!isTwoVertices)
         {
-            for (Vertex point : vertices)
-                if (x < point.x + 25 & x > point.x - 25 & y < point.y + 25 & y > point.y - 25)
+            for (String key: digraph.getMap().keySet())
+                if (x < digraph.getElement(key).getX() + 25 & x > digraph.getElement(key).getX() - 25 & y < digraph.getElement(key).getY() + 25 & y >digraph.getElement(key).getY() - 25)
                 {
-                    vertex.x = (int)point.x;
-                    vertex.y = (int)point.y;
+                    edgeBuff.vSetSource(digraph.getElement(key));
                     isTwoVertices = true;
                     break;
                 }
             System.out.println("Vertex 1");
+
         }
         else
         {
-            for (Vertex point : vertices)
-                if (x < point.getX() + 25 & x > point.getX() - 25 & y < point.getY() + 25 & y > point.getY() - 25)
+            for (String key : digraph.getMap().keySet())
+                if (x < digraph.getElement(key).getX() + 25 & x > digraph.getElement(key).getX() - 25 & y < digraph.getElement(key).getY() + 25 & y >digraph.getElement(key).getY() - 25)
                 {
                     // Опять же не очень история
-                    System.out.println((int)vertex.x + " " + (int)vertex.y);
-                    Vertex v = new Vertex("");
-                    v.x = point.x;
-                    v.y = point.y;
-                    edges.add(new Edge(vertex, v));
-                    //digraph.addEdge(vSource.getName(), vStock.getName());
+                    edgeBuff.vSetStock(digraph.getElement(key));
+                    digraph.addEdge(edgeBuff);
+                    edgeBuff.vGetSource().addVNext(edgeBuff.vGetStock());
 
                     System.out.println("Vertex 2");
                     isTwoVertices = false;
@@ -324,71 +275,38 @@ class DrawPanel extends JPanel
         }
     }
 
-    /*
+
     private void lineRemover(MouseEvent event)
     {
         int x = event.getX();
         int y = event.getY();
-        if (!isTwovertices)
+
+        if (!isTwoVertices)
         {
-            for (Vertex point : vertices)
-                if (x < point.getX() + 25 & x > point.getX() - 25 & y < point.getY() + 25 & y > point.getY() - 25)
+            for (String key: digraph.getMap().keySet())
+                if (x < digraph.getElement(key).getX() + 25 & x > digraph.getElement(key).getX() - 25 & y < digraph.getElement(key).getY() + 25 & y >digraph.getElement(key).getY() - 25)
                 {
-                    point1 = new Vertex((int) point.getX(), (int) point.getY());
-                    isTwovertices = true;
+                    edgeBuff.vSetSource(digraph.getElement(key));
+                    isTwoVertices = true;
                     break;
                 }
             System.out.println("Vertex 1");
+
         }
         else
         {
-            point2 = point1;
-            for (Vertex point : vertices)
-                if (x < point.getX() + 25 & x > point.getX() - 25 & y < point.getY() + 25 & y > point.getY() - 25)
+            for (String key : digraph.getMap().keySet())
+                if (x < digraph.getElement(key).getX() + 25 & x > digraph.getElement(key).getX() - 25 & y < digraph.getElement(key).getY() + 25 & y >digraph.getElement(key).getY() - 25)
                 {
-                    point1 = new Vertex((int) point.getX(), (int) point.getY());
-                    for (int i = 0; i < edges.size(); ++i)
-                    {
-                        System.out.println("Vertex1 = " + edges.get(i).point1.getX() + " " + edges.get(i).point1.getY());
-                        System.out.println("Vertex2 = " + edges.get(i).point2.getX() + " " + edges.get(i).point2.getY());
-                        System.out.println("New p1 = " + point1.getX() + " " + point1.getY());
-                        System.out.println("New p2 = " + point2.getX() + " " + point2.getY());
-
-                        //#TODO нормальный поиск двух точек
-                        if ((edges.get(i).point1.getX() == point1.getX() && edges.get(i).point2.getX() == point2.getX() &&
-                                edges.get(i).point1.getY() == point1.getY() && edges.get(i).point2.getY() == point2.getY()) ||
-                                edges.get(i).point1.getX() == point2.getX() && edges.get(i).point2.getX() == point1.getX() &&
-                                        edges.get(i).point1.getY() == point2.getY() && edges.get(i).point2.getY() == point1.getY()) {
-                            System.out.println("Vertex found!");
-                            edges.remove(edges.get(i));
-
-                            break;
-                        }
-                    }
+                    edgeBuff.vSetStock(digraph.getElement(key));
+                    digraph.removeEdge(edgeBuff.vGetSource(), edgeBuff.vGetStock());
                     System.out.println("Vertex 2");
-                    isTwovertices = false;
+                    isTwoVertices = false;
                     break;
                 }
         }
-    }*/
+    }
 
-    /*
-    //KOSTYL'
-    private void incLineRemover(Vertex point)
-    {
-        int i = -1;
-        for(Line stroke : edges) {
-            if ((stroke.point1.getX() == point.getX() && stroke.point1.getY() == point.getY()) ||
-                    (stroke.point2.getX() == point.getX() && stroke.point2.getY() == point.getY())) {
-
-                edges.remove(stroke);
-                break;
-            }
-            i++;
-        }
-    } */
-
-    //#TODO глобальный баг с кнопками
     int index = 0;
     public void drawProcess()
     {
@@ -403,36 +321,33 @@ class DrawPanel extends JPanel
 
                     String definition = JOptionPane.showInputDialog("Введите имя вершины");
 
-                    Vertex vertex = new Vertex(definition);
-                    vertex.setPoint(new Point(event.getX(), event.getY()));
-                    // Разлад тут ---------------
-                    vertices.add(vertex);
                     digraph.addVertex(definition);
-                    // ---------------------------
+                    digraph.getElement(definition).setPoint(new Point(event.getX(), event.getY()));
+
+
                     labels.add(definition);
                     index++;
 
                     repaint();
                 }
-                else if (isRemVertex)
+               else if (isRemVertex)
                 {
                     isTwoVertices = false;
 
                     int x = event.getX() - 10;
                     int y = event.getY() - 10;
 
-                    for (int i = 0; i < vertices.size(); ++i)
-                        if (x < vertices.get(i).getX() + 25 & x > vertices.get(i).getX() - 25 & y < vertices.get(i).getY() + 25 & y > vertices.get(i).getY() - 25)
+
+                    for (String key : digraph.getMap().keySet()){
+                        if (x < digraph.getElement(key).getX() + 25 & x > digraph.getElement(key).getX() - 25 & y < digraph.getElement(key).getY() + 25 & y >digraph.getElement(key).getY() - 25)
                         {
-                            for(int j = 0; j < vertices.size(); j++)
-                                //incLineRemover(vertices.get(i));
-                            // #TODO подумать над созданием класса где будут имена + точки
-                            digraph.removeVertex(vertices.get(i));
-                            labels.remove(i);
-                            vertices.remove(i);
+                            digraph.removeVertex(digraph.getElement(key));
                             break;
                         }
+
+
                     repaint();
+                     }
                 }
                 else if(isAddEdge)
                 {
@@ -441,41 +356,57 @@ class DrawPanel extends JPanel
                 }
                 else if(isRemEdge)
                 {
-                    //#TODO баг с точками
-                    //lineRemover(event);
+                    lineRemover(event);
                     repaint();
                 }
+
                 else if(isSort)
                 {
-                    //structBuilder();
+                    for(String key : digraph.getMap().keySet()){
+                        for(int i = 0; i < digraph.getElement(key).getVNext().size(); i++)
+                         System.out.println(key + " pedik#"+ i + " " + digraph.getElement(key).getVNext().get(i).getName());
+                    }
+
                     Algorithm algorithm = new Algorithm(digraph);
                     JOptionPane.showConfirmDialog(null, algorithm.sort(), "Результат сортировки", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE);
                     System.exit(0);
                 }
+
+
             }
         });
     }
 
-    private void drawvertices(Graphics g)
+    private void drawVertices(Graphics g)
     {
-        Graphics2D gvertices = (Graphics2D) g;
-        gvertices.setColor(Color.blue);
-        IntStream.range(0, vertices.size()).forEach(i -> {
-            gvertices.fillOval((int) vertices.get(i).x, (int) vertices.get(i).y, 20, 20);
-            gvertices.drawString(labels.get(i), (int) vertices.get(i).x, (int) vertices.get(i).y);
+        Graphics2D gVertices = (Graphics2D) g;
+        gVertices.setColor(Color.blue);
+
+        for (String key: digraph.getMap().keySet()){
+            gVertices.fillOval((int)digraph.getElement(key).getX(), (int)digraph.getElement(key).getY(), 20, 20);
+            gVertices.drawString(digraph.getElement(key).getName(), (int)digraph.getElement(key).getX(), (int)digraph.getElement(key).getY());
+        }
+        /**
+        IntStream.range(0, digraph.getMap().size()).forEach(i -> {
+            gVertices.fillOval((int) vertices.get(i).x, (int) vertices.get(i).y, 20, 20);
+            gVertices.drawString(digraph.get(i), (int) vertices.get(i).x, (int) vertices.get(i).y);
         });
+         */
+
     }
 
-     private void drawLines(Graphics g)
+    private void drawLines(Graphics g)
     {
         Graphics2D gEdges = (Graphics2D) g;
         gEdges.setColor(Color.gray);
 
-        for (Edge edge : edges)
+       for (Edge edge: digraph.getEdges())
         {
-            gEdges.drawLine((int)edge.vGetSource().x + 10, (int)edge.vGetSource().y + 10, (int)edge.vGetStock().x + 10, (int)edge.vGetStock().y + 10);
-            System.out.println((int)edge.vGetSource().x + 10 + " " + (int)edge.vGetSource().y + 10 + " " + (int)edge.vGetStock().x + 10 + " " + (int)edge.vGetStock().y + 10);
+            gEdges.drawLine((int)edge.vGetSource().getX() + 10, (int)edge.vGetSource().getY() + 10, (int)edge.vGetStock().getX() + 10, (int)edge.vGetStock().getY() + 10);
+            System.out.println((int)edge.vGetSource().getX() + 10 + " " + (int)edge.vGetSource().getY() + 10 + " " + (int)edge.vGetStock().getX() + 10 + " " + (int)edge.vGetStock().getY() + 10);
         }
+
+
 
     }
 
@@ -484,6 +415,6 @@ class DrawPanel extends JPanel
     {
         super.paintComponent(g);
         drawLines(g);
-        drawvertices(g);
+        drawVertices(g);
     }
 }

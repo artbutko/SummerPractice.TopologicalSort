@@ -38,7 +38,7 @@ public class Digraph
         graph = new HashMap<String, Vertex>();
         edges = new ArrayList<Edge>();
     }
-    
+
     public boolean replace(){return true;} // Метод для "Песочницы"
 
     /**
@@ -88,21 +88,69 @@ public class Digraph
         vertexFrom.addVNext(vertexTo);
     }
 
+    public void addEdge(Edge edge)
+    {
+        Edge newEdge = new Edge(edge.vGetSource(), edge.vGetStock());
+        edges.add(newEdge);
+
+    }
+
     /**
      * Метод удаления ребра в графе
      */
     public void removeEdge(Vertex vertexFrom, Vertex vertexTo)
     {
         this.getElement(vertexFrom.getName()).removeVNext(vertexTo);
+        for(Edge edge: this.edges){
+            if(edge.vGetSource() == vertexFrom & edge.vGetStock() == vertexTo){
+                edge.vGetSource().removeVNext(edge.vGetStock());
+                edges.remove(edge);
+                break;
+            }
+        }
     }
+
+
+
 
     /**
      * Метод удаления вершины в графе
      */
     public void removeVertex(Vertex vertex)
     {
+        int size = edges.size();
+
+        for(String key : graph.keySet()){
+            for(Vertex v : getElement(key).getVNext()){
+                if(v == vertex){
+                    getElement(key).removeVNext(vertex);
+                    System.out.println("HI");
+                    break;
+                }
+
+            }
+        }
+
+        for(int i = 0; i < size; i++){
+            if(!removeIncEdge(vertex))
+                break;
+        }
+
+
         graph.remove(vertex.getName());
+
     }
+
+    private boolean removeIncEdge(Vertex vertex) {
+        for (Edge edge : edges) {
+            if (edge.vGetSource() == vertex || edge.vGetStock() == vertex) {
+                edges.remove(edge);
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     /**
      * Метод получения списка вершин графа
@@ -112,10 +160,14 @@ public class Digraph
         return new ArrayList<String>(graph.keySet());
     }
 
+
+    public ArrayList<Edge> getEdges(){
+        return edges;
+    }
     /**
      * Метод получения списка ребер графа
      */
-    public ArrayList<String> getEdges()
+    public ArrayList<String> getArrayEdges()
     {
         ArrayList<String> edges = new ArrayList<>();
         for(Edge edge: this.edges){
