@@ -1,52 +1,51 @@
 package Digraph;
+
+import java.awt.*;
+
 /**
  Класс ребер.
  Реализация класса ребер, в основном для работы с GUI
  @author NamYoSeb
  @version 0.1
  */
-
 public class Edge
 {
+
     /**
      Поля вершин ребра, откуда и куда, соответственно
      */
-    private Vertex vSource;
-    private Vertex vStock;
+    private Vertex vFrom;
+    private Vertex vTo;
 
     /**
      * Конструктор класса
      */
-    public Edge(Vertex vSource, Vertex vStock)
+    public Edge(Vertex vFrom, Vertex vTo)
     {
-        this.vSource = vSource;
-        this.vStock = vStock;
+        this.vFrom = vFrom;
+        this.vTo = vTo;
     }
-
-
-    public void vSetSource(Vertex Source){
-        vSource = Source;
-    }
-
-    public void vSetStock(Vertex Stock){
-        vStock = Stock;
-    }
-
     /**
      * Метод получения вершины откуда
      */
-
-
-    public Vertex vGetSource()
+    public Vertex getVFrom()
     {
-        return vSource;
+        return vFrom;
     }
-
     /**
      * Метод получение вершины куда
      */
-    public Vertex vGetStock()
+    public Vertex getVTo()
     {
-        return vStock;
+        return vTo;
+    }
+
+    //-------------------------------------------
+
+    public void draw(Graphics g) {
+        Point p1 = vFrom.getLocation();
+        Point p2 = vTo.getLocation();
+        g.setColor(Color.darkGray);
+        g.drawLine(p1.x, p1.y, p2.x, p2.y);
     }
 }

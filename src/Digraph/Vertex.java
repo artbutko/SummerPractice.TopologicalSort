@@ -137,23 +137,6 @@ public class Vertex {
     }
 
     /**
-     * Метод, возвращающий текущие координаты
-     *
-     */
-    public Point getPoint() {
-        return point;
-    }
-
-    /**
-     * Метод, устанавливающий новые координаты
-     * @param point новая координата
-     */
-    public void setPoint(Point point)
-    {
-        this.point = point;
-    }
-
-    /**
      * Метод изменения цвета вершины
      */
     public void changeColor()
