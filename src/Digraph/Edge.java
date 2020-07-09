@@ -11,8 +11,8 @@ public class Edge
     /**
      Поля вершин ребра, откуда и куда, соответственно
      */
-    private final Vertex vSource;
-    private final Vertex vStock;
+    private Vertex vSource;
+    private Vertex vStock;
 
     /**
      * Конструктор класса
@@ -22,9 +22,21 @@ public class Edge
         this.vSource = vSource;
         this.vStock = vStock;
     }
+
+
+    public void vSetSource(Vertex Source){
+        vSource = Source;
+    }
+
+    public void vSetStock(Vertex Stock){
+        vStock = Stock;
+    }
+
     /**
      * Метод получения вершины откуда
      */
+
+
     public Vertex vGetSource()
     {
         return vSource;
