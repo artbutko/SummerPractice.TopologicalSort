@@ -25,12 +25,17 @@ public class App extends JFrame
     private DrawPanel canvas;
     private final Listener listener = new Listener();
 
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
     /** кнопки нужны во всем суперклассе UserInteractions.App */
     JButton buttonAddVert;
     JButton buttonRemVert;
     JButton buttonAddEdge;
     JButton buttonRemEdge;
     JButton buttonSort;
+    JButton buttonNext;
 
     /** метод создания меню */
     private void createMenuBar() {
@@ -81,36 +86,40 @@ public class App extends JFrame
     {
         toolBar = new JPanel();
         toolBar.setPreferredSize(new Dimension(720, 40));
+            /* Кнопка добавления вершины */
+            buttonAddVert = new JButton("[+] вершина");
+            toolBar.add(buttonAddVert);
+            buttonAddVert.setActionCommand("Add Vertex");
+            buttonAddVert.addActionListener(listener);
 
-        /* Кнопка добавления вершины */
-        buttonAddVert = new JButton("[+] вершина");
-        toolBar.add(buttonAddVert);
-        buttonAddVert.setActionCommand("Add Vertex");
-        buttonAddVert.addActionListener(listener);
+            /* Кнопка удаления вершины */
+            buttonRemVert = new JButton("[-] вершина");
+            toolBar.add(buttonRemVert);
+            buttonRemVert.setActionCommand("Remove Vertex");
+            buttonRemVert.addActionListener(listener);
 
-        /* Кнопка удаления вершины */
-        buttonRemVert = new JButton("[-] вершина");
-        toolBar.add(buttonRemVert);
-        buttonRemVert.setActionCommand("Remove Vertex");
-        buttonRemVert.addActionListener(listener);
+            /* Кнопка добавления ребра */
+            buttonAddEdge = new JButton("[+] ребро");
+            toolBar.add(buttonAddEdge);
+            buttonAddEdge.setActionCommand("Add Edge");
+            buttonAddEdge.addActionListener(listener);
 
-        /* Кнопка добавления ребра */
-        buttonAddEdge = new JButton("[+] ребро");
-        toolBar.add(buttonAddEdge);
-        buttonAddEdge.setActionCommand("Add Edge");
-        buttonAddEdge.addActionListener(listener);
+            /* Кнопка удаления ребра */
+            buttonRemEdge = new JButton("[-] ребро");
+            toolBar.add(buttonRemEdge);
+            buttonRemEdge.setActionCommand("Remove Edge");
+            buttonRemEdge.addActionListener(listener);
 
-        /* Кнопка удаления ребра */
-        buttonRemEdge = new JButton("[-] ребро");
-        toolBar.add(buttonRemEdge);
-        buttonRemEdge.setActionCommand("Remove Edge");
-        buttonRemEdge.addActionListener(listener);
-
-        /* Кнопка сортировки */
-        buttonSort = new JButton("сортировка");
-        toolBar.add(buttonSort);
-        buttonSort.setActionCommand("Sort");
-        buttonSort.addActionListener(listener);
+            /* Кнопка сортировки */
+            buttonSort = new JButton("сортировка");
+            toolBar.add(buttonSort);
+            buttonSort.setActionCommand("Sort");
+            buttonSort.addActionListener(listener);
+        /* Кнопка вперед */
+        buttonNext = new JButton("->");
+        toolBar.add(buttonNext);
+        buttonNext.setActionCommand("Next");
+        buttonNext.addActionListener(listener);
     }
 
     /** класс для отслеживания нажатий кнопок */
@@ -142,6 +151,16 @@ public class App extends JFrame
             else if(e.getSource() == buttonSort) {
                 System.out.println(e.getActionCommand());
                 canvas.setPressedButton(buttonSort);
+            }
+            else if(e.getSource() == buttonNext){
+                System.out.println(e.getActionCommand());
+                canvas.setPressedButton(buttonNext);
+                toolBar.remove(buttonAddVert);
+                toolBar.remove(buttonRemVert);
+                toolBar.remove(buttonAddEdge);
+                toolBar.remove(buttonRemEdge);
+                toolBar.remove(buttonSort);
+                toolBar.repaint();
             }
         }
     }
@@ -188,7 +207,7 @@ class DrawPanel extends JPanel
     public Digraph digraph;
 
     /** Поле активных (заблокированных) кнопок */
-    private boolean  isAddVertex, isRemVertex, isAddEdge, isRemEdge, isSort;
+    private boolean  isAddVertex, isRemVertex, isAddEdge, isRemEdge, isSort, isNext;
 
     /** Поле для MouseEvent, для фиксации двух кликов мыши */
     private boolean isTwoVertices = false;
@@ -256,6 +275,7 @@ class DrawPanel extends JPanel
         isAddEdge = false;
         isRemEdge = false;
         isSort = false;
+        isNext = false;
     }
 
     public void setPressedButton(JButton button)
@@ -282,6 +302,10 @@ class DrawPanel extends JPanel
             case "Sort" -> {
                 isSort = true;
                 System.out.println("OK_SORT");
+            }
+            case "Next" -> {
+                isNext = true;
+                System.out.println("OK_NEXT");
             }
         }
     }
