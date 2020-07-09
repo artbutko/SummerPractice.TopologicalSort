@@ -23,6 +23,7 @@ package Algorithm;
  */
 
 import Digraph.*;
+import Digraph.States;
 
 import java.awt.*;
 import java.lang.*;
@@ -32,13 +33,15 @@ public class Algorithm
 {
     private final Stack<Vertex> vStack;
     private final Digraph digraph;
-    ArrayList<String> sortResult;
+    private ArrayList<String> sortResult;
+
 
     public Algorithm(Digraph digraph)
     {
         this.digraph = digraph;
         vStack = new Stack<Vertex>();
         sortResult = new ArrayList<String>();
+
     }
 
     /**
@@ -55,6 +58,9 @@ public class Algorithm
         else if (vCurrent.getColor() != Color.BLACK)
         {
             vCurrent.changeColor();
+
+
+            digraph.getStates().addState(digraph.getMap());
             /* Если нет пути (конец пути), то пушим эту вершину в стек */
             if (vCurrent.getVNext().size() != 0) {
                 /* Дальнейший проход по потомкам */
@@ -62,6 +68,8 @@ public class Algorithm
                     helpSort(child);
             }
             vCurrent.changeColor();
+            Map<String, Vertex> newState2 = new HashMap<String, Vertex>();
+            digraph.getStates().addState(digraph.getMap());
             vStack.push(vCurrent);
         }
     }
@@ -72,6 +80,8 @@ public class Algorithm
      */
     public ArrayList<String> sort()
     {
+
+        digraph.getStates().addState(digraph.getMap());
         for (String key: digraph.getMap().keySet())
         {
             Vertex vertex = digraph.getElement(key);

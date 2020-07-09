@@ -22,13 +22,14 @@ public class Digraph
     /**
      * Поле графа
      */
-    private final Map<String, Vertex> graph;
+    private Map<String, Vertex> graph;
 
     /**
      * Поле ребер
      */
     private final ArrayList<Edge> edges;
 
+    private States states;
     /**
      * Конструктор класса
      * #TODO default constructor
@@ -37,6 +38,15 @@ public class Digraph
     {
         graph = new HashMap<String, Vertex>();
         edges = new ArrayList<Edge>();
+        states = new States();
+    }
+
+    public States getStates(){
+        return states;
+    }
+
+    public void setState(){
+        graph = states.getState(0);
     }
 
     public boolean replace(){return true;} // Метод для "Песочницы"
