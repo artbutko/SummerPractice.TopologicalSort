@@ -18,12 +18,9 @@ package Algorithm;
  * из него, тем самым задает ей порядок.
  * @author sidtheslooth20, artbutko, NamYoSeb
  * @version 0.1
- * P.S.:Алгоритм пока не тестировался.
- * #TODO Обработка ошибок
  */
 
 import Digraph.*;
-import Digraph.States;
 
 import java.awt.*;
 import java.lang.*;
@@ -64,7 +61,7 @@ public class Algorithm
         if(vCurrent.getColor() == Color.GRAY)
         {
             /* Если вершина серая, то значит цикл в графе, сортировка невозможна */
-            digraph.gHasError(ErrorType.LOOP);
+            digraph.isALoop();
         }
         else if (vCurrent.getColor() != Color.BLACK)
         {
@@ -96,6 +93,9 @@ public class Algorithm
             Vertex vertex = digraph.getElement(key);
             if(vertex.getColor() == Color.WHITE)
                 helpSort(vertex);
+        }
+        if(digraph.isLoop){
+            return null;
         }
         while(!vStack.isEmpty())  sortResult.add(vStack.pop().getName());
         return sortResult;

@@ -5,9 +5,11 @@ import Algorithm.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.security.spec.ECGenParameterSpec;
-import java.util.ArrayList;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Костяк GUI приложения визуализации топологической сортировки
@@ -42,21 +44,140 @@ public class App extends JFrame
         /* "Файл" и его подвкладки */
         JMenu mFile = new JMenu("Файл");
 
-        JMenu mFileNew = new JMenu("Создать");
-        mFile.add(mFileNew);
 
-        JMenuItem mFileNewByString = new JMenuItem("Ввести строку");
-        mFileNew.add(mFileNewByString);
-
-        JMenu mFileOpen = new JMenu("Открыть");
+        JMenuItem mFileOpen = new JMenuItem("Открыть");
         mFile.add(mFileOpen);
 
-        JMenu mFileSave = new JMenu("Сохранить");
+        mFileOpen.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String vertexDataPattern = ".+X\\d{3}Y\\d{3}";
+                String edgeDataPattern = "From.+To.+";
+                HashMap<String, Vertex> d = new HashMap<String, Vertex>();
+
+                FileReader fileReader;
+                try {
+                    fileReader = new FileReader("save.txt");
+                }
+                catch (IOException exception) {
+                    return ;
+                }
+
+                Scanner scanner = new Scanner(fileReader);
+                Digraph graph = new Digraph();
+                while (scanner.hasNextLine())
+                {
+                    String cur = scanner.nextLine();
+                    if (cur.equals("."))
+                        break;
+
+                    if (cur.matches(vertexDataPattern))
+                    {
+                        try {
+                            int y, x;
+                            y = Integer.parseInt(cur.substring(cur.length() -3));
+                            x = Integer.parseInt(cur.substring(cur.length() - 7, cur.length() - 4));
+                            String name = cur.substring(0, cur.length() - 8);
+                            Vertex vertex = new Vertex(name);
+                            vertex.setPoint(x,y);
+                            graph.addVertex(vertex);
+                        }
+                        catch (NumberFormatException exception)
+                        {
+                            return;
+                        }
+                    }
+                    else {
+                        return;
+                    }
+                }
+
+                while (scanner.hasNextLine())
+                {
+                    String cur = scanner.nextLine();
+
+                    if (cur.matches(edgeDataPattern))
+                    {
+                        try {
+                            String nameFrom = cur.substring(4, cur.indexOf("To"));
+                            String nameTo = cur.substring(cur.indexOf("To")+2);
+
+                            graph.addEdge(nameFrom, nameTo);
+                        }
+                        catch (NumberFormatException exception)
+                        {
+                            return;
+                        }
+                    }
+                }
+
+                canvas.digraph = graph;
+                canvas.repaint();
+            }
+        });
+
+        JMenuItem mFileSave = new JMenuItem("Сохранить");
         mFile.add(mFileSave);
+
+        mFileSave.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                FileWriter fileWriter;
+                try {
+                    fileWriter = new FileWriter("save.txt");
+                }
+                catch(IOException exception) {
+                    exception.printStackTrace();
+                    return;
+                }
+
+                StringBuilder graphInfo = new StringBuilder();
+                for (Vertex v : canvas.digraph.getVertexes()) {
+                    StringBuilder vertexInfo = new StringBuilder();
+                    String xCoordinate = coordinateConverter((int)v.getX());
+                    String yCoordinate = coordinateConverter((int)v.getY());
+
+
+                    vertexInfo.append(v.getName());
+                    vertexInfo.append("X");
+                    vertexInfo.append(xCoordinate);
+                    vertexInfo.append("Y");
+                    vertexInfo.append(yCoordinate);
+                    vertexInfo.append("\n");
+
+                    graphInfo.append(vertexInfo);
+                }
+                graphInfo.append(".\n");
+
+                ArrayList<Edge> edges = canvas.digraph.getEdges();
+                for (Edge edge : edges)
+                {
+                    StringBuilder edgeInfo =  new StringBuilder();
+
+                    edgeInfo.append("From");
+                    edgeInfo.append(edge.vGetSource().getName());
+                    edgeInfo.append("To");
+                    edgeInfo.append(edge.vGetStock().getName());
+                    edgeInfo.append("\n");
+
+                    graphInfo.append(edgeInfo);
+                }
+
+                try {
+                    fileWriter.write(graphInfo.toString());
+                    fileWriter.close();
+                }
+                catch (IOException exception)
+                {
+                    exception.printStackTrace();
+                }
+
+            }
+        });
 
         mFile.addSeparator();
 
-        JMenuItem mFileClose = new JMenu("Закрыть");
+        JMenuItem mFileClose = new JMenuItem("Закрыть");
         mFile.add(mFileClose);
 
         mFileClose.addActionListener(new ActionListener() {
@@ -69,13 +190,30 @@ public class App extends JFrame
         /* "Помощь" и его подвкладки */
         JMenu mHelp = new JMenu("Помощь");
 
-        JMenu mHelpAuthors = new JMenu("Авторы");
+        JMenuItem mHelpAuthors = new JMenuItem("Авторы");
         mHelp.add(mHelpAuthors);
 
-        JMenu mHelpAlgorithm = new JMenu("Алгоритм");
+
+        JMenuItem mHelpAlgorithm = new JMenuItem("Алгоритм");
         mHelp.add(mHelpAlgorithm);
 
         menu.add(mHelp);
+    }
+
+    private String coordinateConverter(int x) {
+        String nStringRepresentation = String.valueOf(x);
+        StringBuilder result = new StringBuilder();
+
+        int zerosCnt = 3 - nStringRepresentation.length();
+        while (zerosCnt != 0)
+        {
+            result.append(0);
+            --zerosCnt;
+        }
+
+        result.append(nStringRepresentation);
+
+        return result.toString();
     }
 
     /** метод создания панели инструментов */
@@ -297,7 +435,12 @@ class   DrawPanel extends JPanel
                 System.out.println("OK_SORT");
                 int i = 0;
                 Algorithm algorithm = new Algorithm(digraph);
-                JOptionPane.showConfirmDialog(null, algorithm.sort(), "Результат сортировки", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE);
+                arr = algorithm.sort();
+                if(arr == null){
+                    JOptionPane.showMessageDialog(null, "Граф имеет цикл", "Результат сортировки", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                JOptionPane.showConfirmDialog(null, arr, "Результат сортировки", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE);
                 digraph.states.setStartState();
                 for(String key: digraph.getMap().keySet()){
                     digraph.getMap().get(key).setColor(digraph.states.getState().get(i));
@@ -403,7 +546,7 @@ class   DrawPanel extends JPanel
                 }
         }
     }
-
+    boolean isCorrectInput = false;
     int index = 0;
     public void drawProcess()
     {
@@ -417,9 +560,17 @@ class   DrawPanel extends JPanel
                     isTwoVertices = false;
 
                     String definition = JOptionPane.showInputDialog("Введите имя вершины");
-                    digraph.addVertex(definition);
-                    digraph.getElement(definition).setPoint(new Point(event.getX(), event.getY()));
-                    index++;
+                    for(String key : digraph.getMap().keySet()) {
+                        if (key.equals(definition)) {
+                        // ТЕМА ТАК НАДО, А ЕЩЕ НАДО ДОБАВИТЬ ОКНО:"Ты дебик, такая вершина есть"
+                            return;
+                        }
+                    }
+                            digraph.addVertex(definition);
+                            digraph.getElement(definition).setPoint(new Point(event.getX(), event.getY()));
+                            index++;
+                            isCorrectInput = false;
+
 
                     repaint();
                 }
@@ -491,10 +642,7 @@ class   DrawPanel extends JPanel
                             (int)(y1 + (y2 - y1)/2 - 5 * (x2 - x1)/(Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)))) + 10,
                             (int)(x1 + (x2 - x1)/2 - 5 * (y2 - y1)/(Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)))) + 10,
                             (int)(y1 + (y2 - y1)/2 + 5 * (x2 - x1)/(Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)))) + 10) ;
-            //gEdges.drawLine((int)(x1 + (x2 - x1)/2 + 5*(y2 - y1)/(Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2))) + 10),
-                    //(int)(y1 + (y2 - y1)/2 - 5 * (x2 - x1)/(Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)))) + 10,
-                    //(int)(5*(y2 - y1)/(Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2))) - 5 * (x2 - x1)/(Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2))) + (x1 + (x2 - x1)/2 + 5*((y2 - y1))/(Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2))))) + 10,
-                    //(int)((5*(y2 - y1)/(Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2))) + 5*(y2 - y1)/(Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)))) + (y1 + (y2 - y1)/2 - 5 * (x2 - x1)/(Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)))))+ 10);
+
             gEdges.drawLine((int)(x1 + (x2 - x1)/2 + 5 * (y2 - y1)/(Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)))) + 10,
                     (int)(y1 + (y2 - y1)/2 - 5 * (x2 - x1)/(Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)))) + 10, (int)x2 + 10, (int)y2 + 10);
             gEdges.drawLine((int)(x1 + (x2 - x1)/2 - 5 * (y2 - y1)/(Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)))) + 10,
@@ -503,12 +651,12 @@ class   DrawPanel extends JPanel
 
     }
 
+    ArrayList<String> arr;
+
     private void drawResult(Graphics g)
     {
         Graphics2D gResult = (Graphics2D) g;
 
-        Algorithm algorithm = new Algorithm(digraph);
-        ArrayList<String> arr = algorithm.sort();
         int Y = 200;
         int X = 40;
         int size = 40;
@@ -570,4 +718,6 @@ class   DrawPanel extends JPanel
             drawVertices(g);
         }
     }
+
+
 }

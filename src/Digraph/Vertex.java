@@ -64,14 +64,6 @@ public class Vertex {
         vNext = new ArrayList<Vertex>();
     }
 
-    public Vertex(int x, int y)
-    {
-        this.name = "";
-        sortIndex = 0;
-        point = new Point(x, y);
-        color = Color.WHITE;
-        vNext = new ArrayList<Vertex>();
-    }
 
     /**
      * Метод получения имени вершины
@@ -139,6 +131,13 @@ public class Vertex {
         this.x = point.x;
         this.y = point.y;
         this.point = point;
+    }
+
+    public void setPoint(int x, int y)
+    {
+        this.x = point.x;
+        this.y = point.y;
+        this.point = new Point(x, y);
     }
 
     /**
