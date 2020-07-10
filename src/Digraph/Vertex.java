@@ -43,6 +43,11 @@ public class Vertex {
      */
     private final ArrayList<Vertex> vNext;
 
+    /** Метод изменения цвета */
+
+    public void setColor(Color color){this.color = color;
+    }
+
     /**
      * Поля для хранения координат
      */
@@ -141,8 +146,10 @@ public class Vertex {
      */
     public void changeColor()
     {
-        if (color == Color.WHITE) color = Color.GRAY;
-        color = Color.BLACK;
+        if (color == Color.WHITE)
+            color = Color.GRAY;
+        else
+            color = Color.BLACK;
     }
 
 
