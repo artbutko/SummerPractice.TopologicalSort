@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 
 /**
  * Костяк GUI приложения визуализации топологической сортировки
@@ -32,6 +33,7 @@ public class App extends JFrame
     JButton buttonRemEdge;
     JButton buttonSort;
     JButton buttonNext;
+    JButton buttonPrev;
 
     /** метод создания меню */
     private void createMenuBar() {
@@ -82,40 +84,47 @@ public class App extends JFrame
     {
         toolBar = new JPanel();
         toolBar.setPreferredSize(new Dimension(720, 40));
-            /* Кнопка добавления вершины */
-            buttonAddVert = new JButton("[+] вершина");
-            toolBar.add(buttonAddVert);
-            buttonAddVert.setActionCommand("Add Vertex");
-            buttonAddVert.addActionListener(listener);
 
-            /* Кнопка удаления вершины */
-            buttonRemVert = new JButton("[-] вершина");
-            toolBar.add(buttonRemVert);
-            buttonRemVert.setActionCommand("Remove Vertex");
-            buttonRemVert.addActionListener(listener);
+        /* Кнопка назад */
+        buttonPrev = new JButton("<-");
+        toolBar.add(buttonPrev);
+        buttonPrev.setActionCommand("Prev");
+        buttonPrev.addActionListener(listener);
+        /* Кнопка добавления вершины */
+        buttonAddVert = new JButton("[+] вершина");
+        toolBar.add(buttonAddVert);
+        buttonAddVert.setActionCommand("Add Vertex");
+        buttonAddVert.addActionListener(listener);
 
-            /* Кнопка добавления ребра */
-            buttonAddEdge = new JButton("[+] ребро");
-            toolBar.add(buttonAddEdge);
-            buttonAddEdge.setActionCommand("Add Edge");
-            buttonAddEdge.addActionListener(listener);
+        /* Кнопка удаления вершины */
+        buttonRemVert = new JButton("[-] вершина");
+        toolBar.add(buttonRemVert);
+        buttonRemVert.setActionCommand("Remove Vertex");
+        buttonRemVert.addActionListener(listener);
 
-            /* Кнопка удаления ребра */
-            buttonRemEdge = new JButton("[-] ребро");
-            toolBar.add(buttonRemEdge);
-            buttonRemEdge.setActionCommand("Remove Edge");
-            buttonRemEdge.addActionListener(listener);
+        /* Кнопка добавления ребра */
+        buttonAddEdge = new JButton("[+] ребро");
+        toolBar.add(buttonAddEdge);
+        buttonAddEdge.setActionCommand("Add Edge");
+        buttonAddEdge.addActionListener(listener);
 
-            /* Кнопка сортировки */
-            buttonSort = new JButton("сортировка");
-            toolBar.add(buttonSort);
-            buttonSort.setActionCommand("Sort");
-            buttonSort.addActionListener(listener);
+        /* Кнопка удаления ребра */
+        buttonRemEdge = new JButton("[-] ребро");
+        toolBar.add(buttonRemEdge);
+        buttonRemEdge.setActionCommand("Remove Edge");
+        buttonRemEdge.addActionListener(listener);
+
+        /* Кнопка сортировки */
+        buttonSort = new JButton("сортировка");
+        toolBar.add(buttonSort);
+        buttonSort.setActionCommand("Sort");
+        buttonSort.addActionListener(listener);
         /* Кнопка вперед */
         buttonNext = new JButton("->");
         toolBar.add(buttonNext);
         buttonNext.setActionCommand("Next");
         buttonNext.addActionListener(listener);
+
     }
 
     /** класс для отслеживания нажатий кнопок */
@@ -124,7 +133,18 @@ public class App extends JFrame
         @Override
         public void actionPerformed(ActionEvent e)
         {
-            if(e.getSource() == buttonAddVert)
+            if(e.getSource() == buttonPrev)
+            {
+                System.out.println(e.getActionCommand());
+                canvas.setPressedButton(buttonPrev);
+                toolBar.remove(buttonAddVert);
+                toolBar.remove(buttonRemVert);
+                toolBar.remove(buttonAddEdge);
+                toolBar.remove(buttonRemEdge);
+                toolBar.remove(buttonSort);
+                toolBar.repaint();
+            }
+            else if (e.getSource() == buttonAddVert)
             {
                 System.out.println(e.getActionCommand());
                 canvas.setPressedButton(buttonAddVert);
@@ -147,6 +167,7 @@ public class App extends JFrame
             else if(e.getSource() == buttonSort) {
                 System.out.println(e.getActionCommand());
                 canvas.setPressedButton(buttonSort);
+
             }
             else if(e.getSource() == buttonNext){
                 System.out.println(e.getActionCommand());
@@ -203,8 +224,11 @@ class DrawPanel extends JPanel
     /** Ориентированный граф */
     public Digraph digraph;
 
+    /** Массив вершин для пошаговой отрисовки алгоритма */
+    private ArrayList<Vertex> vertexes;
+
     /** Поле активных (заблокированных) кнопок */
-    private boolean  isAddVertex, isRemVertex, isAddEdge, isRemEdge, isSort, isNext;
+    private boolean  isAddVertex, isRemVertex, isAddEdge, isRemEdge, isSort, isNext, isPrev;
 
     /** Поле для MouseEvent, для фиксации двух кликов мыши */
     private boolean isTwoVertices = false;
@@ -213,7 +237,7 @@ class DrawPanel extends JPanel
     DrawPanel()
     {
         digraph = new Digraph();
-
+        vertexes = new ArrayList<Vertex>();
         edgeBuff = new Edge(null, null);
     }
 
@@ -256,6 +280,10 @@ class DrawPanel extends JPanel
             case "Next" -> {
                 isNext = true;
                 System.out.println("OK_NEXT");
+            }
+            case "Prev" -> {
+                isPrev = true;
+                System.out.println("OK_Prev");
             }
         }
     }
@@ -346,7 +374,7 @@ class DrawPanel extends JPanel
 
                     repaint();
                 }
-               else if (isRemVertex)
+                else if (isRemVertex)
                 {
                     isTwoVertices = false;
 
@@ -360,8 +388,8 @@ class DrawPanel extends JPanel
                             break;
                         }
 
-                    repaint();
-                     }
+                        repaint();
+                    }
                 }
                 else if(isAddEdge)
                 {
@@ -376,9 +404,36 @@ class DrawPanel extends JPanel
 
                 else if(isSort)
                 {
+                    System.out.println("sosi");
+                    int i = 0;
                     Algorithm algorithm = new Algorithm(digraph);
-
                     JOptionPane.showConfirmDialog(null, algorithm.sort(), "Результат сортировки", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE);
+                    digraph.states.setStartState();
+                    for(String key: digraph.getMap().keySet()){
+                        digraph.getMap().get(key).setColor(digraph.states.getState().get(i));
+                        i++;
+                    }
+                    System.out.println(i);
+                    repaint();
+                }
+                //Надо разобраться с адрессами(Вертаксами)
+                else if(isNext){
+                    System.out.println("sosi");
+                    digraph.states.nextState();
+                    int i = 0;
+                    for(String key: digraph.getMap().keySet()){
+                        digraph.getMap().get(key).setColor(digraph.states.getState().get(i));
+                        i++;
+                    }
+                    repaint();
+                }
+                else if(isPrev){
+                    digraph.states.prevState();
+                    int i = 0;
+                    for(String key: digraph.getMap().keySet()){
+                        digraph.getMap().get(key).setColor(digraph.states.getState().get(i));
+                        i++;
+                    }
                     repaint();
                 }
             }
@@ -396,10 +451,10 @@ class DrawPanel extends JPanel
             gVertices.drawString(digraph.getElement(key).getName(), (int)digraph.getElement(key).getX(), (int)digraph.getElement(key).getY());
         }
         /**
-        IntStream.range(0, digraph.getMap().size()).forEach(i -> {
-            gVertices.fillOval((int) vertices.get(i).x, (int) vertices.get(i).y, 20, 20);
-            gVertices.drawString(digraph.get(i), (int) vertices.get(i).x, (int) vertices.get(i).y);
-        });
+         IntStream.range(0, digraph.getMap().size()).forEach(i -> {
+         gVertices.fillOval((int) vertices.get(i).x, (int) vertices.get(i).y, 20, 20);
+         gVertices.drawString(digraph.get(i), (int) vertices.get(i).x, (int) vertices.get(i).y);
+         });
          */
 
     }
@@ -409,7 +464,7 @@ class DrawPanel extends JPanel
         Graphics2D gEdges = (Graphics2D) g;
         gEdges.setColor(Color.gray);
 
-       for (Edge edge: digraph.getEdges())
+        for (Edge edge: digraph.getEdges())
         {
             gEdges.drawLine((int)edge.vGetSource().getX() + 10, (int)edge.vGetSource().getY() + 10, (int)edge.vGetStock().getX() + 10, (int)edge.vGetStock().getY() + 10);
             // Нарисовать стрелку

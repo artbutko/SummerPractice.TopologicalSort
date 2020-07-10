@@ -22,13 +22,14 @@ public class Digraph
     /**
      * Поле графа
      */
-    private final Map<String, Vertex> graph;
+    private Map<String, Vertex> graph;
 
     /**
      * Поле ребер
      */
     private final ArrayList<Edge> edges;
 
+    public States states;
     /**
      * Конструктор класса
      * #TODO default constructor
@@ -37,7 +38,9 @@ public class Digraph
     {
         graph = new HashMap<String, Vertex>();
         edges = new ArrayList<Edge>();
+        states = new States();
     }
+
 
     public boolean replace(){return true;} // Метод для "Песочницы"
 
@@ -124,7 +127,6 @@ public class Digraph
             for(Vertex v : getElement(key).getVNext()){
                 if(v == vertex){
                     getElement(key).removeVNext(vertex);
-                    System.out.println("HI");
                     break;
                 }
 

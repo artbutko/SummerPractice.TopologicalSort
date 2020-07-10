@@ -23,6 +23,7 @@ package Algorithm;
  */
 
 import Digraph.*;
+import Digraph.States;
 
 import java.awt.*;
 import java.lang.*;
@@ -32,13 +33,26 @@ public class Algorithm
 {
     private final Stack<Vertex> vStack;
     private final Digraph digraph;
-    ArrayList<String> sortResult;
+    private ArrayList<String> sortResult;
+
 
     public Algorithm(Digraph digraph)
     {
         this.digraph = digraph;
         vStack = new Stack<Vertex>();
         sortResult = new ArrayList<String>();
+
+    }
+
+    /** Метод заполнения массива цветов для пошагового прохода алгоритма */
+    private void addColorsState(){
+        ArrayList<Color> colorsState = new ArrayList<Color>();
+        Color clr;
+        for(String key : digraph.getMap().keySet()){
+            clr = digraph.getMap().get(key).getColor();
+            colorsState.add(digraph.getMap().get(key).getColor());
+        }
+        digraph.states.addState(colorsState);
     }
 
     /**
@@ -55,6 +69,8 @@ public class Algorithm
         else if (vCurrent.getColor() != Color.BLACK)
         {
             vCurrent.changeColor();
+
+            addColorsState();
             /* Если нет пути (конец пути), то пушим эту вершину в стек */
             if (vCurrent.getVNext().size() != 0) {
                 /* Дальнейший проход по потомкам */
@@ -62,9 +78,11 @@ public class Algorithm
                     helpSort(child);
             }
             vCurrent.changeColor();
+            addColorsState();
             vStack.push(vCurrent);
         }
     }
+
 
     /**
      * Головная функция топологической сортировки, вызывающая рекурсивную функцию
@@ -72,6 +90,7 @@ public class Algorithm
      */
     public ArrayList<String> sort()
     {
+        addColorsState();
         for (String key: digraph.getMap().keySet())
         {
             Vertex vertex = digraph.getElement(key);
