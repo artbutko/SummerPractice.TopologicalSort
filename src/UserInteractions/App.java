@@ -243,7 +243,7 @@ public class App extends JFrame
 
 }
 
-class DrawPanel extends JPanel
+class   DrawPanel extends JPanel
 {
     /** Ориентированный граф */
     public Digraph digraph;
@@ -482,7 +482,23 @@ class DrawPanel extends JPanel
         {
             gEdges.drawLine((int)edge.vGetSource().getX() + 10, (int)edge.vGetSource().getY() + 10, (int)edge.vGetStock().getX() + 10, (int)edge.vGetStock().getY() + 10);
             // Нарисовать стрелку
-            System.out.println((int)edge.vGetSource().getX() + 10 + " " + (int)edge.vGetSource().getY() + 10 + " " + (int)edge.vGetStock().getX() + 10 + " " + (int)edge.vGetStock().getY() + 10);
+            double x1 = edge.vGetSource().getX();
+            double x2 = edge.vGetStock().getX();
+            double y1 = edge.vGetSource().getY();
+            double y2 = edge.vGetStock().getY();
+
+            gEdges.drawLine((int)(x1 + (x2 - x1)/2 + 5 * (y2 - y1)/(Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)))) + 10,
+                            (int)(y1 + (y2 - y1)/2 - 5 * (x2 - x1)/(Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)))) + 10,
+                            (int)(x1 + (x2 - x1)/2 - 5 * (y2 - y1)/(Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)))) + 10,
+                            (int)(y1 + (y2 - y1)/2 + 5 * (x2 - x1)/(Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)))) + 10) ;
+            //gEdges.drawLine((int)(x1 + (x2 - x1)/2 + 5*(y2 - y1)/(Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2))) + 10),
+                    //(int)(y1 + (y2 - y1)/2 - 5 * (x2 - x1)/(Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)))) + 10,
+                    //(int)(5*(y2 - y1)/(Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2))) - 5 * (x2 - x1)/(Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2))) + (x1 + (x2 - x1)/2 + 5*((y2 - y1))/(Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2))))) + 10,
+                    //(int)((5*(y2 - y1)/(Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2))) + 5*(y2 - y1)/(Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)))) + (y1 + (y2 - y1)/2 - 5 * (x2 - x1)/(Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)))))+ 10);
+            gEdges.drawLine((int)(x1 + (x2 - x1)/2 + 5 * (y2 - y1)/(Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)))) + 10,
+                    (int)(y1 + (y2 - y1)/2 - 5 * (x2 - x1)/(Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)))) + 10, (int)x2 + 10, (int)y2 + 10);
+            gEdges.drawLine((int)(x1 + (x2 - x1)/2 - 5 * (y2 - y1)/(Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)))) + 10,
+                    (int)(y1 + (y2 - y1)/2 + 5 * (x2 - x1)/(Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)))) + 10, (int)x2 + 10, (int)y2 + 10);
         }
 
     }
