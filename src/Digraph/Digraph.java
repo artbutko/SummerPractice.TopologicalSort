@@ -34,6 +34,9 @@ public class Digraph
      * Конструктор класса
      * #TODO default constructor
      */
+
+    public boolean  isLoop = false;
+
     public Digraph()
     {
         graph = new HashMap<String, Vertex>();
@@ -78,6 +81,12 @@ public class Digraph
             graph.put(name, vertex);
         }
     }
+
+    public void addVertex(Vertex vertex)
+    {
+        graph.put(vertex.getName(),vertex);
+    }
+
 
     /**
      * Метод добавления ребра в граф и список ребер
@@ -157,9 +166,9 @@ public class Digraph
     /**
      * Метод получения списка вершин графа
      */
-    public ArrayList<String> getVertexes()
+    public ArrayList<Vertex> getVertexes()
     {
-        return new ArrayList<String>(graph.keySet());
+        return new ArrayList<Vertex>(graph.values());
     }
 
 
@@ -181,15 +190,11 @@ public class Digraph
     /**
      * Псевдо метод для обработки ошибок
      */
-    public void gHasError(ErrorType e)
+    public void isALoop()
     {
-        if(e == ErrorType.FOREST){
-            System.out.println("TIPO GRAPH IS A FOREST");
-        }
-
-        else if(e == ErrorType.LOOP){
+       isLoop = true;
             System.out.println("TIPO GRAPH ETO LOOP");
-        }
+
     }
 
 
