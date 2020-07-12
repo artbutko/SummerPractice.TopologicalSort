@@ -282,8 +282,8 @@ public class  DrawPanel extends JPanel
         for (String element : sortArray)
         {
             gResult.setColor(Color.BLACK);
-            gResult.fillOval(40 + count * 40, 200, 20, 20);
-            gResult.drawString(digraph.getElement(element).getName(), 40 + count * 40, 200);
+            gResult.fillOval(40 + count * 40, 180, 20, 20);
+                gResult.drawString(digraph.getElement(element).getName(), 40 + count * 40, 180);
             count++;
         }
         count = 0;
@@ -300,19 +300,19 @@ public class  DrawPanel extends JPanel
                 gResult.setStroke(new BasicStroke(3));
 
                 if (nowIndex + 1 == index)
-                    gResult.drawLine(50 + 40 * count, 210, 50 + 40 * index, 210);
+                    gResult.drawLine(50 + 40 * count, 190, 50 + 40 * index, 190);
                 else if (isSwitch)
                 {
-                    gResult.drawLine(50 + 40 * count, 210, 50 + 40 * count, 210 + size);
-                    gResult.drawLine(50 + 40 * index, 210, 50 + 40 * index, 210 + size);
-                    gResult.drawLine(50 + 40 * count, 210 + size, 50 + 40 * index, 210 + size);
+                    gResult.drawLine(50 + 40 * count, 190, 50 + 40 * count, 190 + size);
+                    gResult.drawLine(50 + 40 * index, 190, 50 + 40 * index, 190 + size);
+                    gResult.drawLine(50 + 40 * count, 190 + size, 50 + 40 * index, 190 + size);
                     isSwitch = false;
                 }
                 else
                 {
-                    gResult.drawLine(50 + 40 * count, 210, 50 + 40 * count, 210 - size);
-                    gResult.drawLine(50 + 40 * index, 210, 50 + 40 * index, 210 - size);
-                    gResult.drawLine(50 + 40 * count, 210 - size, 50 + 40 * index, 210 - size);
+                    gResult.drawLine(50 + 40 * count, 190, 50 + 40 * count, 190 - size);
+                    gResult.drawLine(50 + 40 * index, 190, 50 + 40 * index, 190 - size);
+                    gResult.drawLine(50 + 40 * count, 190 - size, 50 + 40 * index, 190 - size);
                     isSwitch = true;
                     size += 20;
                 }
