@@ -34,6 +34,7 @@ public class Application extends JFrame
     private JButton buttonPrev;
     private JButton buttonResult;
 
+
     /** метод создания меню */
     private void createMenuBar() {
         /* header menu */
@@ -91,7 +92,6 @@ public class Application extends JFrame
             while (scanner.hasNextLine())
             {
                 String cur = scanner.nextLine();
-
                 if (cur.matches(edgeDataPattern))
                 {
                     try {
