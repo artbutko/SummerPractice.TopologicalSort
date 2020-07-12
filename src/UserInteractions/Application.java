@@ -14,7 +14,7 @@ import java.lang.*;
 /**
  *  класс GUI приложения визуализации топологической сортировки
  *  @author artbutko
- *  @version 1.0
+ *  @version final
  */
 
 public class Application extends JFrame
@@ -325,7 +325,7 @@ public class Application extends JFrame
         buttonToEnd.addActionListener(listener);
 
         /* Кнопка запуска алгоритма */
-        buttonPlay = new JButton("Play");
+        buttonPlay = new JButton("запуск");
         toolBar.add(buttonPlay);
         buttonPlay.setVisible(false);
         buttonPlay.setActionCommand("Play");

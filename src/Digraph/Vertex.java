@@ -13,7 +13,7 @@ import java.util.*;
  * Методы:
  *      getName(); addVNext(); removeVNext(); getVNext(); setIndex(); changeColor(); getColor();
  * @author NamYoSeb, Sidtheslooth20
- * @version 1.0
+ * @version final
  * P.S.: Есть сомнения с добавлением и удалением элементов, так как про новую версию сборки Java
  * мало доступной информации.
  */

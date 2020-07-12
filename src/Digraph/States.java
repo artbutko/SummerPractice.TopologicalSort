@@ -6,7 +6,7 @@ import java.util.*;
 /**
  * Класс состояний программы для отрисовки графов
  * @author NamYoSeb, Sidtheslooth20
- * @version 1.0
+ * @version final
  */
 
 public class States

@@ -17,7 +17,7 @@ package Algorithm;
  * Так же головная функция рассортировывает данные из стека, и присвает ей индекс в порядке выхода
  * из него, тем самым задает ей порядок.
  * @author sidtheslooth20, artbutko, NamYoSeb
- * @version 0.1
+ * @version final
  */
 
 import Digraph.*;
