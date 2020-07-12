@@ -35,6 +35,35 @@ public class Application extends JFrame
     private JButton buttonResult;
 
 
+    public Application()
+    {
+        frame = new JFrame("Топологическая сортировка");
+
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.getContentPane().setLayout(new BorderLayout());
+
+        /* Создание меню и добавление в окно приложения */
+        createMenuBar();
+        frame.setJMenuBar(menu);
+
+        /* Создание панели с инструментами */
+        createToolBar();
+
+        /* Создание панели с холстом */
+        createCanvas();
+        canvas.drawProcess();
+
+        frame.getContentPane().add(toolBar, BorderLayout.PAGE_START);
+        frame.getContentPane().add(canvas, BorderLayout.CENTER);
+
+        /* window settings */
+        frame.setPreferredSize(new Dimension(720, 480));
+        frame.setResizable(false);
+        frame.pack();
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+    }
+
     /** метод создания меню */
     private void createMenuBar() {
         /* header menu */
@@ -42,7 +71,6 @@ public class Application extends JFrame
 
         /* "Файл" и его подвкладки */
         JMenu mFile = new JMenu("Файл");
-
 
         JMenuItem mFileOpen = new JMenuItem("Открыть");
         mFile.add(mFileOpen);
@@ -361,38 +389,6 @@ public class Application extends JFrame
     {
         canvas = new DrawPanel();
         canvas.setLayout(new FlowLayout());
-        canvas.setBackground(new java.awt.Color(229, 229, 229, 169));
+        canvas.setBackground(new java.awt.Color(200, 200, 200, 255));
     }
-
-    public Application()
-    {
-        frame = new JFrame("Топологическая сортировка");
-
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.getContentPane().setLayout(new BorderLayout());
-
-        /* Создание меню и добавление в окно приложения */
-        createMenuBar();
-        frame.setJMenuBar(menu);
-
-        /* Создание панели с инструментами */
-        createToolBar();
-
-        /* Создание панели с холстом */
-        createCanvas();
-        canvas.drawProcess();
-
-
-
-        frame.getContentPane().add(toolBar, BorderLayout.PAGE_START);
-        frame.getContentPane().add(canvas, BorderLayout.CENTER);
-
-        /* window settings */
-        frame.setPreferredSize(new Dimension(720, 480));
-        frame.setResizable(false);
-        frame.pack();
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
-    }
-
 }

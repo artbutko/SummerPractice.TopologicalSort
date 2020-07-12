@@ -7,6 +7,9 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
 import java.util.Random;
+import java.util.Timer;
+import java.util.Timer.*;
+
 
 /**
  *  Класс-холст, с которым взаимодействует пользователь
@@ -55,6 +58,20 @@ public class  DrawPanel extends JPanel
         return sortArray == null;
     }
 
+    public void getNext()
+    {
+        isSort = false;
+        System.out.println("OK_NEXT");
+        digraph.states.nextState();
+        int i = 0;
+        for(String key: digraph.getMap().keySet())
+        {
+            digraph.getMap().get(key).setColor(digraph.states.getState().get(i));
+            i++;
+        }
+        repaint();
+    }
+
     /** Функция нажатой кнопки.
      * @param button -- нажатая кнопка. */
     public void setPressedButton(JButton button)
@@ -90,34 +107,72 @@ public class  DrawPanel extends JPanel
                 }
                 System.out.println(i);
                 isSort = true;
+                repaint();
             }
             case "Next" -> {
-                isSort = false;
-                System.out.println("OK_NEXT");
-                digraph.states.nextState();
-                int i = 0;
-                for(String key: digraph.getMap().keySet())
-                {
-                    digraph.getMap().get(key).setColor(digraph.states.getState().get(i));
-                    i++;
-                }
+                getNext();
             }
             case "Prev" -> {
                 isSort = false;
                 System.out.println("OK_PREV");
                 digraph.states.prevState();
                 int i = 0;
+                for(String key: digraph.getMap().keySet())
+                {
+                    digraph.getMap().get(key).setColor(digraph.states.getState().get(i));
+                    i++;
+                }
+                repaint();
+            }
+<<<<<<< Updated upstream
+=======
+            case "ToEnd" -> {
+                isSort = false;
+                System.out.println("OK_TO_END");
+                digraph.states.setFinishState();
+                int i = 0;
                 for(String key: digraph.getMap().keySet()){
                     digraph.getMap().get(key).setColor(digraph.states.getState().get(i));
                     i++;
                 }
+                repaint();
             }
+            case "ToStart" ->{
+                isSort = false;
+                System.out.println("OK_TO_START");
+                digraph.states.setStartState();
+                int i = 0;
+                for(String key: digraph.getMap().keySet()){
+                    digraph.getMap().get(key).setColor(digraph.states.getState().get(i));
+                    i++;
+                }
+                repaint();
+            }
+            case "Play" -> {
+                isSort = false;
+                System.out.println("OK_PLAY");
+                digraph.states.setStartState();
+
+                Timer timer = new Timer();
+                TimerTask task = new TimerTask() {
+                    @Override
+                    public void run() {
+                        getNext();
+                        if (digraph.states.getState() == digraph.states.colors.get(digraph.states.colors.size() - 1))
+                        {
+                            this.cancel();
+                        }
+                    }
+                };
+                timer.schedule(task, new Date(), 500);
+            }
+>>>>>>> Stashed changes
             case "Result" -> {
                 isSort = true;
                 System.out.println("RESULT");
+                repaint();
             }
         }
-        repaint();
     }
 
     /** Создание ребра
@@ -207,6 +262,7 @@ public class  DrawPanel extends JPanel
 
                     digraph.addVertex(definition);
                     digraph.getElement(definition).setPoint(new Point(event.getX(), event.getY()));
+                    repaint();
                 }
                 else if (isRemVertex)
                 {
@@ -221,12 +277,18 @@ public class  DrawPanel extends JPanel
                             digraph.removeVertex(digraph.getElement(key));
                             break;
                         }
+                    repaint();
                 }
                 else if(isAddEdge)
+                {
                     lineCreator(event);
+                    repaint();
+                }
                 else if(isRemEdge)
+                {
                     lineRemover(event);
-                repaint();
+                    repaint();
+                }
             }
         });
     }
@@ -273,6 +335,7 @@ public class  DrawPanel extends JPanel
     /** Функция рендеринга и рисования результата */
     private void drawResult(Graphics g)
     {
+        System.out.println("resssss");
         Graphics2D gResult = (Graphics2D) g;
         int count = 0;
         boolean isSwitch = true;
