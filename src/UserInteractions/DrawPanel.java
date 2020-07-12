@@ -14,7 +14,7 @@ import java.util.Timer.*;
 /**
  *  Класс-холст, с которым взаимодействует пользователь
  *  @author artbutko
- *  @version 1.0
+ *  @version final
  */
 
 public class  DrawPanel extends JPanel

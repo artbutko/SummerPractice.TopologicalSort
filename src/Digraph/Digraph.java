@@ -9,7 +9,7 @@ package Digraph;
  *      isEmpty(); getMap(); getElement(); addVertex(); addEdge(); removeEdge;
  *      removeVertex(); getVertexes(); getEdges();
  * @author NamYoSeb
- * @version 1.0
+ * @version final
  */
 
 import java.lang.*;

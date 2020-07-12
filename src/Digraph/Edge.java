@@ -4,7 +4,7 @@ package Digraph;
  Класс ребер.
  Реализация класса ребер, в основном для работы с GUI
  @author NamYoSeb
- @version 1.0
+ @version final
  */
 
 public class Edge
