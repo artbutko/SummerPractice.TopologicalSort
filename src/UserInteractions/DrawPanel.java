@@ -19,6 +19,7 @@ import java.util.Timer.*;
 
 public class  DrawPanel extends JPanel
 {
+
     /** Ориентированный граф. */
     public Digraph digraph;
 
@@ -74,8 +75,7 @@ public class  DrawPanel extends JPanel
 
     /** Функция нажатой кнопки.
      * @param button -- нажатая кнопка. */
-    public void setPressedButton(JButton button)
-    {
+    public void setPressedButton(JButton button) {
         setButtonsLocked();
         switch (button.getActionCommand())
         {
@@ -124,8 +124,6 @@ public class  DrawPanel extends JPanel
                 }
                 repaint();
             }
-<<<<<<< Updated upstream
-=======
             case "ToEnd" -> {
                 isSort = false;
                 System.out.println("OK_TO_END");
@@ -166,7 +164,6 @@ public class  DrawPanel extends JPanel
                 };
                 timer.schedule(task, new Date(), 500);
             }
->>>>>>> Stashed changes
             case "Result" -> {
                 isSort = true;
                 System.out.println("RESULT");
@@ -346,7 +343,7 @@ public class  DrawPanel extends JPanel
         {
             gResult.setColor(Color.BLACK);
             gResult.fillOval(40 + count * 40, 180, 20, 20);
-                gResult.drawString(digraph.getElement(element).getName(), 40 + count * 40, 180);
+            gResult.drawString(digraph.getElement(element).getName(), 40 + count * 40, 180);
             count++;
         }
         count = 0;

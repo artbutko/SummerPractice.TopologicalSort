@@ -9,6 +9,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
+import java.lang.*;
 
 /**
  *  класс GUI приложения визуализации топологической сортировки
@@ -25,15 +26,17 @@ public class Application extends JFrame
     private final Listener listener = new Listener();
 
     /** кнопки нужны во всем суперклассе UserInteractions.App */
-    private JButton buttonAddVert;
-    private JButton buttonRemVert;
-    private JButton buttonAddEdge;
-    private JButton buttonRemEdge;
-    private JButton buttonSort;
-    private JButton buttonNext;
-    private JButton buttonPrev;
-    private JButton buttonResult;
-
+    JButton buttonAddVert;
+    JButton buttonRemVert;
+    JButton buttonAddEdge;
+    JButton buttonRemEdge;
+    JButton buttonSort;
+    JButton buttonNext;
+    JButton buttonToEnd;
+    JButton buttonToStart;
+    JButton buttonPrev;
+    JButton buttonResult;
+    JButton buttonPlay;
 
     public Application()
     {
@@ -256,6 +259,13 @@ public class Application extends JFrame
         toolBar = new JPanel();
         toolBar.setPreferredSize(new Dimension(720, 40));
 
+        /* Кнопка "в начало" */
+        buttonToStart = new JButton("<<");
+        toolBar.add(buttonToStart);
+        buttonToStart.setVisible(false);
+        buttonToStart.setActionCommand("ToStart");
+        buttonToStart.addActionListener(listener);
+
         /* Кнопка назад */
         buttonPrev = new JButton("<=");
         toolBar.add(buttonPrev);
@@ -300,13 +310,26 @@ public class Application extends JFrame
         buttonResult.setActionCommand("Result");
         buttonResult.addActionListener(listener);
 
-
         /* Кнопка вперед */
         buttonNext = new JButton("=>");
         toolBar.add(buttonNext);
         buttonNext.setVisible(false);
         buttonNext.setActionCommand("Next");
         buttonNext.addActionListener(listener);
+
+        /* Кнопка "в конец" */
+        buttonToEnd = new JButton(">>");
+        toolBar.add(buttonToEnd);
+        buttonToEnd.setVisible(false);
+        buttonToEnd.setActionCommand("ToEnd");
+        buttonToEnd.addActionListener(listener);
+
+        /* Кнопка запуска алгоритма */
+        buttonPlay = new JButton("Play");
+        toolBar.add(buttonPlay);
+        buttonPlay.setVisible(false);
+        buttonPlay.setActionCommand("Play");
+        buttonPlay.addActionListener(listener);
 
     }
 
@@ -318,8 +341,8 @@ public class Application extends JFrame
         {
             if(e.getSource() == buttonResult)
             {
-            System.out.println(e.getActionCommand());
-            canvas.setPressedButton(buttonResult);
+                System.out.println(e.getActionCommand());
+                canvas.setPressedButton(buttonResult);
             }
             if(e.getSource() == buttonPrev)
             {
@@ -350,10 +373,10 @@ public class Application extends JFrame
             {
                 if (canvas.isLoop())
                 {
-                JOptionPane.showMessageDialog(frame,
-                        "Цикл в графе!",
-                        "Ошибка",
-                        JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(frame,
+                            "Цикл в графе!",
+                            "Ошибка",
+                            JOptionPane.ERROR_MESSAGE);
                 }
                 else if (!canvas.digraph.isEmpty())
                 {
@@ -367,6 +390,9 @@ public class Application extends JFrame
                     buttonPrev.setVisible(true);
                     buttonNext.setVisible(true);
                     buttonResult.setVisible(true);
+                    buttonToStart.setVisible(true);
+                    buttonToEnd.setVisible(true);
+                    buttonPlay.setVisible(true);
                     toolBar.repaint();
                 }
                 else
@@ -380,6 +406,18 @@ public class Application extends JFrame
             else if(e.getSource() == buttonNext){
                 System.out.println(e.getActionCommand());
                 canvas.setPressedButton(buttonNext);
+            }
+            else if(e.getSource() == buttonToEnd){
+                System.out.println(e.getActionCommand());
+                canvas.setPressedButton(buttonToEnd);
+            }
+            else if(e.getSource() == buttonToStart){
+                System.out.println(e.getActionCommand());
+                canvas.setPressedButton(buttonToStart);
+            }
+            else if(e.getSource() == buttonPlay){
+                System.out.println(e.getActionCommand());
+                canvas.setPressedButton(buttonPlay);
             }
         }
     }
