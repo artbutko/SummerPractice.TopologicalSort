@@ -78,7 +78,21 @@ public class Algorithm
             if(vertex.getColor() == Color.WHITE)
                 helpSort(vertex);
         }
+<<<<<<< Updated upstream
+=======
+        if(digraph.isLoop)
+        {
+            System.out.println("EMPTY");
+            for (String key: digraph.getMap().keySet())
+            {
+                digraph.getElement(key).setColor(Color.WHITE);
+            }
+            digraph.isLoop = false;
+            return null;
+        }
+>>>>>>> Stashed changes
         while(!vStack.isEmpty())  sortResult.add(vStack.pop().getName());
+        System.out.println(sortResult);
         return sortResult;
     }
 

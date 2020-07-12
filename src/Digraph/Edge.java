@@ -1,9 +1,10 @@
 package Digraph;
+
 /**
  Класс ребер.
  Реализация класса ребер, в основном для работы с GUI
  @author NamYoSeb
- @version 0.1
+ @version 1.0
  */
 
 public class Edge
@@ -23,6 +24,10 @@ public class Edge
         this.vStock = vStock;
     }
 
+    public  boolean isSelfEdge()
+    {
+        return vSource == vStock;
+    }
 
     public void vSetSource(Vertex Source){
         vSource = Source;
