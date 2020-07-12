@@ -34,6 +34,7 @@ public class Application extends JFrame
     private JButton buttonPrev;
     private JButton buttonResult;
 
+
     /** метод создания меню */
     private void createMenuBar() {
         /* header menu */
@@ -45,79 +46,74 @@ public class Application extends JFrame
 
         JMenuItem mFileOpen = new JMenuItem("Открыть");
         mFile.add(mFileOpen);
+        mFileOpen.addActionListener(e -> {
+            String vertexDataPattern = ".+X\\d{3}Y\\d{3}";
+            String edgeDataPattern = "From.+To.+";
+            HashMap<String, Vertex> d = new HashMap<String, Vertex>();
 
-        mFileOpen.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String vertexDataPattern = ".+X\\d{3}Y\\d{3}";
-                String edgeDataPattern = "From.+To.+";
-                HashMap<String, Vertex> d = new HashMap<String, Vertex>();
-
-                FileReader fileReader;
-                try
-                {
-                    fileReader = new FileReader("save.txt");
-                }
-                catch (IOException exception)
-                {
-                    return ;
-                }
-
-                Scanner scanner = new Scanner(fileReader);
-                Digraph graph = new Digraph();
-                while (scanner.hasNextLine())
-                {
-                    String cur = scanner.nextLine();
-                    if (cur.equals("."))
-                        break;
-                    if (cur.matches(vertexDataPattern))
-                    {
-                        try
-                        {
-                            int y, x;
-                            y = Integer.parseInt(cur.substring(cur.length() -3));
-                            x = Integer.parseInt(cur.substring(cur.length() - 7, cur.length() - 4));
-                            String name = cur.substring(0, cur.length() - 8);
-                            Vertex vertex = new Vertex(name);
-                            vertex.setPoint(x,y);
-                            graph.addVertex(vertex);
-                        }
-                        catch (NumberFormatException exception)
-                        {
-                            return;
-                        }
-                    }
-                    else
-                        return;
-                }
-
-                while (scanner.hasNextLine())
-                {
-                    String cur = scanner.nextLine();
-
-                    if (cur.matches(edgeDataPattern))
-                    {
-                        try {
-                            String nameFrom = cur.substring(4, cur.indexOf("To"));
-                            String nameTo = cur.substring(cur.indexOf("To")+2);
-
-                            graph.addEdge(nameFrom, nameTo);
-                        }
-                        catch (NumberFormatException exception)
-                        {
-                            return;
-                        }
-                    }
-                }
-
-                canvas.digraph = graph;
-                canvas.repaint();
+            FileReader fileReader;
+            try
+            {
+                fileReader = new FileReader("save.txt");
             }
+            catch (IOException exception)
+            {
+                return ;
+            }
+
+            Scanner scanner = new Scanner(fileReader);
+            Digraph graph = new Digraph();
+            while (scanner.hasNextLine())
+            {
+                String cur = scanner.nextLine();
+                if (cur.equals("."))
+                    break;
+                if (cur.matches(vertexDataPattern))
+                {
+                    try
+                    {
+                        int y, x;
+                        y = Integer.parseInt(cur.substring(cur.length() -3));
+                        x = Integer.parseInt(cur.substring(cur.length() - 7, cur.length() - 4));
+                        String name = cur.substring(0, cur.length() - 8);
+                        Vertex vertex = new Vertex(name);
+                        vertex.setPoint(x,y);
+                        graph.addVertex(vertex);
+                    }
+                    catch (NumberFormatException exception)
+                    {
+                        return;
+                    }
+                }
+                else
+                    return;
+            }
+
+            while (scanner.hasNextLine())
+            {
+                String cur = scanner.nextLine();
+
+                if (cur.matches(edgeDataPattern))
+                {
+                    try {
+                        String nameFrom = cur.substring(4, cur.indexOf("To"));
+                        String nameTo = cur.substring(cur.indexOf("To")+2);
+
+                        graph.addEdge(nameFrom, nameTo);
+                    }
+                    catch (NumberFormatException exception)
+                    {
+                        return;
+                    }
+                }
+            }
+
+            canvas.digraph = graph;
+            canvas.repaint();
         });
 
         JMenuItem mFileSave = new JMenuItem("Сохранить");
         mFile.add(mFileSave);
-
         mFileSave.addActionListener(e -> {
             FileWriter fileWriter;
             try
@@ -174,12 +170,8 @@ public class Application extends JFrame
 
         JMenuItem mFileClose = new JMenuItem("Закрыть");
         mFile.add(mFileClose);
+        mFileClose.addActionListener(e -> System.exit(0));
 
-        mFileClose.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                System.exit(0);
-            }
-        });
         menu.add(mFile);
 
         /* "Помощь" и его подвкладки */
@@ -187,10 +179,30 @@ public class Application extends JFrame
 
         JMenuItem mHelpAuthors = new JMenuItem("Авторы");
         mHelp.add(mHelpAuthors);
-
+        mHelpAuthors.addActionListener(e -> JOptionPane.showMessageDialog(null, "Артём Бутко, Нам Ё Себ, Дмитрий Самакаев\n" + "https://github.com/artbutko/SummerPractice.TopologicalSort", "Авторы", JOptionPane.INFORMATION_MESSAGE));
 
         JMenuItem mHelpAlgorithm = new JMenuItem("Алгоритм");
         mHelp.add(mHelpAlgorithm);
+        mHelpAlgorithm.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                String message = "На компьютере топологическую сортировку можно выполнить за O(n) времени и памяти,\nесли обойти все вершины, используя поиск в глубину, и выводить вершины в момент выхода из неё.\n" +
+                        "\n" +
+                        "Другими словами алгоритм состоит в следующем:\n" +
+                        "- Изначально все вершины белые.\n" +
+                        "- Для каждой вершины делаем шаг алгоритма.\n" +
+                        "Шаг алгоритма:\n" +
+                        "- Если вершина чёрная, ничего делать не надо.\n" +
+                        "- Если вершина серая — найден цикл, топологическая сортировка невозможна.\n" +
+                        "- Если вершина белая\n" +
+                        "   + Красим её в серый\n" +
+                        "   + Применяем шаг алгоритма для всех вершин, в которые можно попасть из текущей\n" +
+                        "   + Красим вершину в чёрный и помещаем её в начало окончательного списка.";
+                JOptionPane.showMessageDialog(null, message, "Алгоритм", JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
 
         menu.add(mHelp);
     }

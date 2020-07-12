@@ -53,7 +53,6 @@ public class Vertex
     public Vertex(int x, int y)
     {
         this.name = "";
-        sortIndex = 0;
         point = new Point(x, y);
         color = Color.WHITE;
         vNext = new ArrayList<Vertex>();
