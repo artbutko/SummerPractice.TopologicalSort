@@ -19,6 +19,8 @@ public class States
         this.colors = new ArrayList<>();
     }
 
+
+
     public void addState(ArrayList<Color> colorState)
     {
         colors.add(colorState);
@@ -39,5 +41,16 @@ public class States
     {
         if(current > 0)
             current--;
+    }
+
+    public void setStartState()
+    {
+        current = 0;
+    }
+
+    public void setFinishState()
+    {
+        if(colors.size() > 0)
+            current = colors.size() - 1;
     }
 }

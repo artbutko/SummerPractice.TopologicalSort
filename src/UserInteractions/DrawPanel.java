@@ -16,6 +16,7 @@ import java.util.Random;
 
 public class  DrawPanel extends JPanel
 {
+
     /** Ориентированный граф. */
     public Digraph digraph;
 
@@ -57,8 +58,7 @@ public class  DrawPanel extends JPanel
 
     /** Функция нажатой кнопки.
      * @param button -- нажатая кнопка. */
-    public void setPressedButton(JButton button)
-    {
+    public void setPressedButton(JButton button) {
         setButtonsLocked();
         switch (button.getActionCommand())
         {
@@ -110,6 +110,57 @@ public class  DrawPanel extends JPanel
                 for(String key: digraph.getMap().keySet()){
                     digraph.getMap().get(key).setColor(digraph.states.getState().get(i));
                     i++;
+                }
+            }
+            case "ToEnd" -> {
+                isSort = false;
+                System.out.println("OK_TO_END");
+                digraph.states.setFinishState();
+                int i = 0;
+                for(String key: digraph.getMap().keySet()){
+                    digraph.getMap().get(key).setColor(digraph.states.getState().get(i));
+                    i++;
+                }
+                repaint();
+            }
+            case "ToStart" ->{
+                isSort = false;
+                System.out.println("OK_TO_START");
+                digraph.states.setStartState();
+                int i = 0;
+                for(String key: digraph.getMap().keySet()){
+                    digraph.getMap().get(key).setColor(digraph.states.getState().get(i));
+                    i++;
+                }
+                repaint();
+            }
+            case "Play" -> {
+                isSort = false;
+                System.out.println("OK_PLAY");
+                digraph.states.setStartState();
+                int i = 0;
+                for(String key: digraph.getMap().keySet()){
+                    digraph.getMap().get(key).setColor(digraph.states.getState().get(i));
+                    i++;
+                }
+
+                for(int j = 0; j < digraph.states.colors.size(); j++) {
+                    long start = System.currentTimeMillis();
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    System.out.println("Sleep time in ms = "+(System.currentTimeMillis()-start));
+                    digraph.states.nextState();
+                    int z = 0;
+
+                    for (String key : digraph.getMap().keySet()) {
+
+                        digraph.getMap().get(key).setColor(digraph.states.getState().get(z));
+                        z++;
+                    }
+                    repaint();
                 }
             }
             case "Result" -> {
@@ -283,7 +334,7 @@ public class  DrawPanel extends JPanel
         {
             gResult.setColor(Color.BLACK);
             gResult.fillOval(40 + count * 40, 180, 20, 20);
-                gResult.drawString(digraph.getElement(element).getName(), 40 + count * 40, 180);
+            gResult.drawString(digraph.getElement(element).getName(), 40 + count * 40, 180);
             count++;
         }
         count = 0;
