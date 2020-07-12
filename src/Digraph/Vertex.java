@@ -32,11 +32,6 @@ public class Vertex
     /** Поле для хранения потомков */
     private final ArrayList<Vertex> vNext;
 
-<<<<<<< Updated upstream
-    /**
-     * Поля для хранения координат
-     */
-=======
     /** Метод изменения цвета */
     public void setColor(Color color)
     {
@@ -44,7 +39,6 @@ public class Vertex
     }
 
     /** Поля для хранения координат */
->>>>>>> Stashed changes
     public double x = 0, y = 0;
 
     /** Конструктор класса */
@@ -56,7 +50,6 @@ public class Vertex
         vNext = new ArrayList<Vertex>();
     }
 
-<<<<<<< Updated upstream
     public Vertex(int x, int y)
     {
         this.name = "";
@@ -66,15 +59,9 @@ public class Vertex
         vNext = new ArrayList<Vertex>();
     }
 
-    /**
-     * Метод получения имени вершины
-     */
-    public String getName() {
-=======
     /** Метод получения имени вершины */
     public String getName()
     {
->>>>>>> Stashed changes
         return name;
     }
 
@@ -117,11 +104,6 @@ public class Vertex
         this.point = point;
     }
 
-<<<<<<< Updated upstream
-    /**
-     * Метод изменения цвета вершины
-     */
-=======
     /** Метод, устанавливающий новые координаты
      * @param x координата
      * @param y координата */
@@ -132,12 +114,13 @@ public class Vertex
         this.point = new Point(x, y);
     }
 
-    /*** Метод изменения цвета вершины */
->>>>>>> Stashed changes
+    /** Метод изменения цвета вершины */
     public void changeColor()
     {
-        if (color == Color.WHITE) color = Color.GRAY;
-        color = Color.BLACK;
+        if (color == Color.WHITE)
+            color = Color.GRAY;
+        else
+            color = Color.BLACK;
     }
 
     /** Метод получения цвета вершины */

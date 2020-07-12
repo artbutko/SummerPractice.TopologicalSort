@@ -18,8 +18,6 @@ package Algorithm;
  * из него, тем самым задает ей порядок.
  * @author sidtheslooth20, artbutko, NamYoSeb
  * @version 0.1
- * P.S.:Алгоритм пока не тестировался.
- * #TODO Обработка ошибок
  */
 
 import Digraph.*;
@@ -32,13 +30,26 @@ public class Algorithm
 {
     private final Stack<Vertex> vStack;
     private final Digraph digraph;
-    ArrayList<String> sortResult;
+    private ArrayList<String> sortResult;
+
 
     public Algorithm(Digraph digraph)
     {
         this.digraph = digraph;
         vStack = new Stack<Vertex>();
         sortResult = new ArrayList<String>();
+
+    }
+
+    /** Метод заполнения массива цветов для пошагового прохода алгоритма */
+    private void addColorsState(){
+        ArrayList<Color> colorsState = new ArrayList<Color>();
+        Color clr;
+        for(String key : digraph.getMap().keySet()){
+            clr = digraph.getMap().get(key).getColor();
+            colorsState.add(digraph.getMap().get(key).getColor());
+        }
+        digraph.states.addState(colorsState);
     }
 
     /**
@@ -50,11 +61,13 @@ public class Algorithm
         if(vCurrent.getColor() == Color.GRAY)
         {
             /* Если вершина серая, то значит цикл в графе, сортировка невозможна */
-            digraph.gHasError(ErrorType.LOOP);
+            digraph.isALoop();
         }
         else if (vCurrent.getColor() != Color.BLACK)
         {
             vCurrent.changeColor();
+
+            addColorsState();
             /* Если нет пути (конец пути), то пушим эту вершину в стек */
             if (vCurrent.getVNext().size() != 0) {
                 /* Дальнейший проход по потомкам */
@@ -62,9 +75,11 @@ public class Algorithm
                     helpSort(child);
             }
             vCurrent.changeColor();
+            addColorsState();
             vStack.push(vCurrent);
         }
     }
+
 
     /**
      * Головная функция топологической сортировки, вызывающая рекурсивную функцию
@@ -72,14 +87,13 @@ public class Algorithm
      */
     public ArrayList<String> sort()
     {
+        addColorsState();
         for (String key: digraph.getMap().keySet())
         {
             Vertex vertex = digraph.getElement(key);
             if(vertex.getColor() == Color.WHITE)
                 helpSort(vertex);
         }
-<<<<<<< Updated upstream
-=======
         if(digraph.isLoop)
         {
             System.out.println("EMPTY");
@@ -90,7 +104,6 @@ public class Algorithm
             digraph.isLoop = false;
             return null;
         }
->>>>>>> Stashed changes
         while(!vStack.isEmpty())  sortResult.add(vStack.pop().getName());
         System.out.println(sortResult);
         return sortResult;

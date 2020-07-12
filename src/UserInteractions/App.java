@@ -4,10 +4,12 @@ import Digraph.*;
 import Algorithm.*;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.security.spec.ECGenParameterSpec;
+import java.util.*;
 
 /**
  * Костяк GUI приложения визуализации топологической сортировки
@@ -18,12 +20,11 @@ import java.awt.event.MouseEvent;
 
 public class App extends JFrame
 {
+    private JFrame frame;
     private JMenuBar menu;
     private JPanel toolBar;
     private DrawPanel canvas;
     private final Listener listener = new Listener();
-
-
 
     /** кнопки нужны во всем суперклассе UserInteractions.App */
     JButton buttonAddVert;
@@ -32,6 +33,8 @@ public class App extends JFrame
     JButton buttonRemEdge;
     JButton buttonSort;
     JButton buttonNext;
+    JButton buttonPrev;
+    JButton buttonResult;
 
     /** метод создания меню */
     private void createMenuBar() {
@@ -41,21 +44,140 @@ public class App extends JFrame
         /* "Файл" и его подвкладки */
         JMenu mFile = new JMenu("Файл");
 
-        JMenu mFileNew = new JMenu("Создать");
-        mFile.add(mFileNew);
 
-        JMenuItem mFileNewByString = new JMenuItem("Ввести строку");
-        mFileNew.add(mFileNewByString);
-
-        JMenu mFileOpen = new JMenu("Открыть");
+        JMenuItem mFileOpen = new JMenuItem("Открыть");
         mFile.add(mFileOpen);
 
-        JMenu mFileSave = new JMenu("Сохранить");
+        mFileOpen.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String vertexDataPattern = ".+X\\d{3}Y\\d{3}";
+                String edgeDataPattern = "From.+To.+";
+                HashMap<String, Vertex> d = new HashMap<String, Vertex>();
+
+                FileReader fileReader;
+                try {
+                    fileReader = new FileReader("save.txt");
+                }
+                catch (IOException exception) {
+                    return ;
+                }
+
+                Scanner scanner = new Scanner(fileReader);
+                Digraph graph = new Digraph();
+                while (scanner.hasNextLine())
+                {
+                    String cur = scanner.nextLine();
+                    if (cur.equals("."))
+                        break;
+
+                    if (cur.matches(vertexDataPattern))
+                    {
+                        try {
+                            int y, x;
+                            y = Integer.parseInt(cur.substring(cur.length() -3));
+                            x = Integer.parseInt(cur.substring(cur.length() - 7, cur.length() - 4));
+                            String name = cur.substring(0, cur.length() - 8);
+                            Vertex vertex = new Vertex(name);
+                            vertex.setPoint(x,y);
+                            graph.addVertex(vertex);
+                        }
+                        catch (NumberFormatException exception)
+                        {
+                            return;
+                        }
+                    }
+                    else {
+                        return;
+                    }
+                }
+
+                while (scanner.hasNextLine())
+                {
+                    String cur = scanner.nextLine();
+
+                    if (cur.matches(edgeDataPattern))
+                    {
+                        try {
+                            String nameFrom = cur.substring(4, cur.indexOf("To"));
+                            String nameTo = cur.substring(cur.indexOf("To")+2);
+
+                            graph.addEdge(nameFrom, nameTo);
+                        }
+                        catch (NumberFormatException exception)
+                        {
+                            return;
+                        }
+                    }
+                }
+
+                canvas.digraph = graph;
+                canvas.repaint();
+            }
+        });
+
+        JMenuItem mFileSave = new JMenuItem("Сохранить");
         mFile.add(mFileSave);
+
+        mFileSave.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                FileWriter fileWriter;
+                try {
+                    fileWriter = new FileWriter("save.txt");
+                }
+                catch(IOException exception) {
+                    exception.printStackTrace();
+                    return;
+                }
+
+                StringBuilder graphInfo = new StringBuilder();
+                for (Vertex v : canvas.digraph.getVertexes()) {
+                    StringBuilder vertexInfo = new StringBuilder();
+                    String xCoordinate = coordinateConverter((int)v.getX());
+                    String yCoordinate = coordinateConverter((int)v.getY());
+
+
+                    vertexInfo.append(v.getName());
+                    vertexInfo.append("X");
+                    vertexInfo.append(xCoordinate);
+                    vertexInfo.append("Y");
+                    vertexInfo.append(yCoordinate);
+                    vertexInfo.append("\n");
+
+                    graphInfo.append(vertexInfo);
+                }
+                graphInfo.append(".\n");
+
+                ArrayList<Edge> edges = canvas.digraph.getEdges();
+                for (Edge edge : edges)
+                {
+                    StringBuilder edgeInfo =  new StringBuilder();
+
+                    edgeInfo.append("From");
+                    edgeInfo.append(edge.vGetSource().getName());
+                    edgeInfo.append("To");
+                    edgeInfo.append(edge.vGetStock().getName());
+                    edgeInfo.append("\n");
+
+                    graphInfo.append(edgeInfo);
+                }
+
+                try {
+                    fileWriter.write(graphInfo.toString());
+                    fileWriter.close();
+                }
+                catch (IOException exception)
+                {
+                    exception.printStackTrace();
+                }
+
+            }
+        });
 
         mFile.addSeparator();
 
-        JMenuItem mFileClose = new JMenu("Закрыть");
+        JMenuItem mFileClose = new JMenuItem("Закрыть");
         mFile.add(mFileClose);
 
         mFileClose.addActionListener(new ActionListener() {
@@ -68,13 +190,30 @@ public class App extends JFrame
         /* "Помощь" и его подвкладки */
         JMenu mHelp = new JMenu("Помощь");
 
-        JMenu mHelpAuthors = new JMenu("Авторы");
+        JMenuItem mHelpAuthors = new JMenuItem("Авторы");
         mHelp.add(mHelpAuthors);
 
-        JMenu mHelpAlgorithm = new JMenu("Алгоритм");
+
+        JMenuItem mHelpAlgorithm = new JMenuItem("Алгоритм");
         mHelp.add(mHelpAlgorithm);
 
         menu.add(mHelp);
+    }
+
+    private String coordinateConverter(int x) {
+        String nStringRepresentation = String.valueOf(x);
+        StringBuilder result = new StringBuilder();
+
+        int zerosCnt = 3 - nStringRepresentation.length();
+        while (zerosCnt != 0)
+        {
+            result.append(0);
+            --zerosCnt;
+        }
+
+        result.append(nStringRepresentation);
+
+        return result.toString();
     }
 
     /** метод создания панели инструментов */
@@ -82,40 +221,59 @@ public class App extends JFrame
     {
         toolBar = new JPanel();
         toolBar.setPreferredSize(new Dimension(720, 40));
-            /* Кнопка добавления вершины */
-            buttonAddVert = new JButton("[+] вершина");
-            toolBar.add(buttonAddVert);
-            buttonAddVert.setActionCommand("Add Vertex");
-            buttonAddVert.addActionListener(listener);
 
-            /* Кнопка удаления вершины */
-            buttonRemVert = new JButton("[-] вершина");
-            toolBar.add(buttonRemVert);
-            buttonRemVert.setActionCommand("Remove Vertex");
-            buttonRemVert.addActionListener(listener);
+        /* Кнопка назад */
+        buttonPrev = new JButton("<=");
+        toolBar.add(buttonPrev);
+        buttonPrev.setVisible(false);
+        buttonPrev.setActionCommand("Prev");
+        buttonPrev.addActionListener(listener);
 
-            /* Кнопка добавления ребра */
-            buttonAddEdge = new JButton("[+] ребро");
-            toolBar.add(buttonAddEdge);
-            buttonAddEdge.setActionCommand("Add Edge");
-            buttonAddEdge.addActionListener(listener);
+        /* Кнопка добавления вершины */
+        buttonAddVert = new JButton("[+] вершина");
+        toolBar.add(buttonAddVert);
+        buttonAddVert.setActionCommand("Add Vertex");
+        buttonAddVert.addActionListener(listener);
 
-            /* Кнопка удаления ребра */
-            buttonRemEdge = new JButton("[-] ребро");
-            toolBar.add(buttonRemEdge);
-            buttonRemEdge.setActionCommand("Remove Edge");
-            buttonRemEdge.addActionListener(listener);
+        /* Кнопка удаления вершины */
+        buttonRemVert = new JButton("[-] вершина");
+        toolBar.add(buttonRemVert);
+        buttonRemVert.setActionCommand("Remove Vertex");
+        buttonRemVert.addActionListener(listener);
 
-            /* Кнопка сортировки */
-            buttonSort = new JButton("сортировка");
-            toolBar.add(buttonSort);
-            buttonSort.setActionCommand("Sort");
-            buttonSort.addActionListener(listener);
+        /* Кнопка добавления ребра */
+        buttonAddEdge = new JButton("[+] ребро");
+        toolBar.add(buttonAddEdge);
+        buttonAddEdge.setActionCommand("Add Edge");
+        buttonAddEdge.addActionListener(listener);
+
+        /* Кнопка удаления ребра */
+        buttonRemEdge = new JButton("[-] ребро");
+        toolBar.add(buttonRemEdge);
+        buttonRemEdge.setActionCommand("Remove Edge");
+        buttonRemEdge.addActionListener(listener);
+
+        /* Кнопка сортировки */
+        buttonSort = new JButton("сортировка");
+        toolBar.add(buttonSort);
+        buttonSort.setActionCommand("Sort");
+        buttonSort.addActionListener(listener);
+
+        /* Кнопка результат */
+        buttonResult = new JButton("результат");
+        toolBar.add(buttonResult);
+        buttonResult.setVisible(false);
+        buttonResult.setActionCommand("Result");
+        buttonResult.addActionListener(listener);
+
+
         /* Кнопка вперед */
-        buttonNext = new JButton("->");
+        buttonNext = new JButton("=>");
         toolBar.add(buttonNext);
+        buttonNext.setVisible(false);
         buttonNext.setActionCommand("Next");
         buttonNext.addActionListener(listener);
+
     }
 
     /** класс для отслеживания нажатий кнопок */
@@ -124,7 +282,17 @@ public class App extends JFrame
         @Override
         public void actionPerformed(ActionEvent e)
         {
-            if(e.getSource() == buttonAddVert)
+            if(e.getSource() == buttonResult)
+            {
+            System.out.println(e.getActionCommand());
+            canvas.setPressedButton(buttonResult);
+            }
+            if(e.getSource() == buttonPrev)
+            {
+                System.out.println(e.getActionCommand());
+                canvas.setPressedButton(buttonPrev);
+            }
+            else if (e.getSource() == buttonAddVert)
             {
                 System.out.println(e.getActionCommand());
                 canvas.setPressedButton(buttonAddVert);
@@ -144,19 +312,34 @@ public class App extends JFrame
                 System.out.println(e.getActionCommand());
                 canvas.setPressedButton(buttonRemEdge);
             }
-            else if(e.getSource() == buttonSort) {
-                System.out.println(e.getActionCommand());
-                canvas.setPressedButton(buttonSort);
+            else if(e.getSource() == buttonSort)
+            {
+                if (!canvas.digraph.isEmpty())
+                {
+                    System.out.println(e.getActionCommand());
+                    canvas.setPressedButton(buttonSort);
+                    toolBar.remove(buttonAddVert);
+                    toolBar.remove(buttonRemVert);
+                    toolBar.remove(buttonAddEdge);
+                    toolBar.remove(buttonRemEdge);
+                    toolBar.remove(buttonSort);
+                    //toolBar.remove(buttonSort);
+                    buttonPrev.setVisible(true);
+                    buttonNext.setVisible(true);
+                    buttonResult.setVisible(true);
+                    toolBar.repaint();
+                }
+                else
+                {
+                    JOptionPane.showMessageDialog(frame,
+                            "Your Digraph is empty.",
+                            "Error",
+                            JOptionPane.WARNING_MESSAGE);
+                }
             }
             else if(e.getSource() == buttonNext){
                 System.out.println(e.getActionCommand());
                 canvas.setPressedButton(buttonNext);
-                toolBar.remove(buttonAddVert);
-                toolBar.remove(buttonRemVert);
-                toolBar.remove(buttonAddEdge);
-                toolBar.remove(buttonRemEdge);
-                toolBar.remove(buttonSort);
-                toolBar.repaint();
             }
         }
     }
@@ -171,7 +354,7 @@ public class App extends JFrame
 
     public void createGUI()
     {
-        JFrame frame = new JFrame("Топологическая сортировка");
+        frame = new JFrame("Топологическая сортировка");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.getContentPane().setLayout(new BorderLayout());
 
@@ -183,10 +366,10 @@ public class App extends JFrame
         createToolBar();
         /* Создание панели с холстом */
         createCanvas();
+        canvas.drawProcess();
 
         frame.getContentPane().add(toolBar, BorderLayout.PAGE_START);
         frame.getContentPane().add(canvas, BorderLayout.CENTER);
-        canvas.drawProcess();
 
         /* window settings */
         frame.setPreferredSize(new Dimension(720, 480));
@@ -198,25 +381,26 @@ public class App extends JFrame
 
 }
 
-class DrawPanel extends JPanel
+class   DrawPanel extends JPanel
 {
     /** Ориентированный граф */
     public Digraph digraph;
 
-    /** Поле активных (заблокированных) кнопок */
-    private boolean  isAddVertex, isRemVertex, isAddEdge, isRemEdge, isSort, isNext;
+    /** Массив вершин для пошаговой отрисовки алгоритма */
+    private ArrayList<Vertex> vertexes;
 
     /** Поле для MouseEvent, для фиксации двух кликов мыши */
     private boolean isTwoVertices = false;
+
+    private boolean  isAddVertex, isRemVertex, isAddEdge, isRemEdge, isSort;
 
     /** Конструктор класса */
     DrawPanel()
     {
         digraph = new Digraph();
-
+        vertexes = new ArrayList<Vertex>();
         edgeBuff = new Edge(null, null);
     }
-
 
     private void setButtonsLocked()
     {
@@ -224,8 +408,6 @@ class DrawPanel extends JPanel
         isRemVertex = false;
         isAddEdge = false;
         isRemEdge = false;
-        isSort = false;
-        isNext = false;
     }
 
     public void setPressedButton(JButton button)
@@ -250,15 +432,54 @@ class DrawPanel extends JPanel
                 System.out.println("OK_REM_EDGE");
             }
             case "Sort" -> {
-                isSort = true;
                 System.out.println("OK_SORT");
+                int i = 0;
+                Algorithm algorithm = new Algorithm(digraph);
+                arr = algorithm.sort();
+                if(arr == null){
+                    JOptionPane.showMessageDialog(null, "Граф имеет цикл", "Результат сортировки", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                JOptionPane.showConfirmDialog(null, arr, "Результат сортировки", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE);
+                digraph.states.setStartState();
+                for(String key: digraph.getMap().keySet()){
+                    digraph.getMap().get(key).setColor(digraph.states.getState().get(i));
+                    i++;
+                }
+                System.out.println(i);
+                isSort = true;
+                repaint();
             }
             case "Next" -> {
-                isNext = true;
+                isSort = false;
                 System.out.println("OK_NEXT");
+                digraph.states.nextState();
+                int i = 0;
+                for(String key: digraph.getMap().keySet()){
+                    digraph.getMap().get(key).setColor(digraph.states.getState().get(i));
+                    i++;
+                }
+                repaint();
+            }
+            case "Prev" -> {
+                isSort = false;
+                System.out.println("OK_PREV");
+                digraph.states.prevState();
+                int i = 0;
+                for(String key: digraph.getMap().keySet()){
+                    digraph.getMap().get(key).setColor(digraph.states.getState().get(i));
+                    i++;
+                }
+                repaint();
+            }
+            case "Result" -> {
+                isSort = true;
+                System.out.println("RESULT");
+                repaint();
             }
         }
     }
+
 
     public Edge edgeBuff;
 
@@ -296,7 +517,6 @@ class DrawPanel extends JPanel
         }
     }
 
-
     private void lineRemover(MouseEvent event)
     {
         int x = event.getX();
@@ -326,7 +546,7 @@ class DrawPanel extends JPanel
                 }
         }
     }
-
+    boolean isCorrectInput = false;
     int index = 0;
     public void drawProcess()
     {
@@ -340,13 +560,21 @@ class DrawPanel extends JPanel
                     isTwoVertices = false;
 
                     String definition = JOptionPane.showInputDialog("Введите имя вершины");
-                    digraph.addVertex(definition);
-                    digraph.getElement(definition).setPoint(new Point(event.getX(), event.getY()));
-                    index++;
+                    for(String key : digraph.getMap().keySet()) {
+                        if (key.equals(definition)) {
+                        // ТЕМА ТАК НАДО, А ЕЩЕ НАДО ДОБАВИТЬ ОКНО:"Ты дебик, такая вершина есть"
+                            return;
+                        }
+                    }
+                            digraph.addVertex(definition);
+                            digraph.getElement(definition).setPoint(new Point(event.getX(), event.getY()));
+                            index++;
+                            isCorrectInput = false;
+
 
                     repaint();
                 }
-               else if (isRemVertex)
+                else if (isRemVertex)
                 {
                     isTwoVertices = false;
 
@@ -359,9 +587,8 @@ class DrawPanel extends JPanel
                             digraph.removeVertex(digraph.getElement(key));
                             break;
                         }
-
+                    }
                     repaint();
-                     }
                 }
                 else if(isAddEdge)
                 {
@@ -373,17 +600,10 @@ class DrawPanel extends JPanel
                     lineRemover(event);
                     repaint();
                 }
-
-                else if(isSort)
-                {
-                    Algorithm algorithm = new Algorithm(digraph);
-
-                    JOptionPane.showConfirmDialog(null, algorithm.sort(), "Результат сортировки", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE);
-                    repaint();
-                }
             }
         });
     }
+
 
     private void drawVertices(Graphics g)
     {
@@ -396,10 +616,10 @@ class DrawPanel extends JPanel
             gVertices.drawString(digraph.getElement(key).getName(), (int)digraph.getElement(key).getX(), (int)digraph.getElement(key).getY());
         }
         /**
-        IntStream.range(0, digraph.getMap().size()).forEach(i -> {
-            gVertices.fillOval((int) vertices.get(i).x, (int) vertices.get(i).y, 20, 20);
-            gVertices.drawString(digraph.get(i), (int) vertices.get(i).x, (int) vertices.get(i).y);
-        });
+         IntStream.range(0, digraph.getMap().size()).forEach(i -> {
+         gVertices.fillOval((int) vertices.get(i).x, (int) vertices.get(i).y, 20, 20);
+         gVertices.drawString(digraph.get(i), (int) vertices.get(i).x, (int) vertices.get(i).y);
+         });
          */
 
     }
@@ -407,26 +627,97 @@ class DrawPanel extends JPanel
     private void drawLines(Graphics g)
     {
         Graphics2D gEdges = (Graphics2D) g;
-        gEdges.setColor(Color.gray);
+        gEdges.setColor(Color.black);
 
-       for (Edge edge: digraph.getEdges())
+        for (Edge edge: digraph.getEdges())
         {
             gEdges.drawLine((int)edge.vGetSource().getX() + 10, (int)edge.vGetSource().getY() + 10, (int)edge.vGetStock().getX() + 10, (int)edge.vGetStock().getY() + 10);
             // Нарисовать стрелку
-            System.out.println((int)edge.vGetSource().getX() + 10 + " " + (int)edge.vGetSource().getY() + 10 + " " + (int)edge.vGetStock().getX() + 10 + " " + (int)edge.vGetStock().getY() + 10);
+            double x1 = edge.vGetSource().getX();
+            double x2 = edge.vGetStock().getX();
+            double y1 = edge.vGetSource().getY();
+            double y2 = edge.vGetStock().getY();
+
+            gEdges.drawLine((int)(x1 + (x2 - x1)/2 + 5 * (y2 - y1)/(Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)))) + 10,
+                            (int)(y1 + (y2 - y1)/2 - 5 * (x2 - x1)/(Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)))) + 10,
+                            (int)(x1 + (x2 - x1)/2 - 5 * (y2 - y1)/(Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)))) + 10,
+                            (int)(y1 + (y2 - y1)/2 + 5 * (x2 - x1)/(Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)))) + 10) ;
+
+            gEdges.drawLine((int)(x1 + (x2 - x1)/2 + 5 * (y2 - y1)/(Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)))) + 10,
+                    (int)(y1 + (y2 - y1)/2 - 5 * (x2 - x1)/(Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)))) + 10, (int)x2 + 10, (int)y2 + 10);
+            gEdges.drawLine((int)(x1 + (x2 - x1)/2 - 5 * (y2 - y1)/(Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)))) + 10,
+                    (int)(y1 + (y2 - y1)/2 + 5 * (x2 - x1)/(Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)))) + 10, (int)x2 + 10, (int)y2 + 10);
         }
 
     }
 
-    private void drawResult(Graphics g){
+    ArrayList<String> arr;
 
+    private void drawResult(Graphics g)
+    {
+        Graphics2D gResult = (Graphics2D) g;
+
+        int Y = 200;
+        int X = 40;
+        int size = 40;
+
+        for (String element : arr)
+        {
+            gResult.setColor(digraph.getElement(element).getColor());
+            gResult.fillOval(X, Y, 20, 20);
+            gResult.drawString(digraph.getElement(element).getName(), X, Y);
+            X += 40;
+        }
+
+        X = 50;
+        Y += 10;
+        int count = 0;
+        boolean Switch = true;
+        Random rand = new Random();
+
+        for (String label : arr)
+        {
+            for (Vertex Next : digraph.getElement(label).getVNext())
+            {
+                float red = rand.nextFloat();
+                float green = rand.nextFloat();
+                float blue = rand.nextFloat();
+                int index = arr.indexOf(Next.getName());
+                gResult.setColor(new Color(red, green, blue));
+                if (Switch)
+               {
+                   gResult.drawLine(X + 40 * count, Y, X + 40 * count, Y + size);
+                   gResult.drawLine(X + 40 * index, Y, X + 40 * index, Y + size);
+                   gResult.drawLine(X + 40 * count, Y + size, X + 40 * index, Y + size);
+                   Switch = false;
+               }
+               else
+               {
+                    gResult.drawLine(X + 40 * count, Y, X + 40 * count, Y - size);
+                    gResult.drawLine(X + 40 * index, Y, X + 40 * index, Y - size);
+                    gResult.drawLine(X + 40 * count, Y - size, X + 40 * index, Y - size);
+                    Switch = true;
+                    size += 20;
+               }
+            }
+            count++;
+        }
     }
+
     @Override
     public void paintComponent(Graphics g)
     {
         super.paintComponent(g);
-        drawLines(g);
-        drawVertices(g);
-        drawResult(g);
+        if (isSort)
+        {
+            drawResult(g);
+        }
+        else
+        {
+            drawLines(g);
+            drawVertices(g);
+        }
     }
+
+
 }

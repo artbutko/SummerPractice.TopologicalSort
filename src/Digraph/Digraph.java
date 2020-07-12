@@ -17,22 +17,6 @@ import java.util.*;
 
 public class Digraph
 {
-<<<<<<< Updated upstream
-    /**
-     * Поле графа
-     */
-    private final Map<String, Vertex> graph;
-
-    /**
-     * Поле ребер
-     */
-    private final ArrayList<Edge> edges;
-
-    /**
-     * Конструктор класса
-     * #TODO default constructor
-     */
-=======
     /** Поле графа */
     private final Map<String, Vertex> graph;
 
@@ -46,22 +30,14 @@ public class Digraph
     public boolean  isLoop = false;
 
     /** Конструктор класса */
->>>>>>> Stashed changes
     public Digraph()
     {
         graph = new HashMap<String, Vertex>();
         edges = new ArrayList<Edge>();
+        states = new States();
     }
 
-<<<<<<< Updated upstream
-    public boolean replace(){return true;} // Метод для "Песочницы"
-
-    /**
-     * Метод, проверяющий граф на пустоту
-     */
-=======
     /** Метод, проверяющий граф на пустоту */
->>>>>>> Stashed changes
     public boolean isEmpty()
     {
         return graph.isEmpty();
@@ -91,12 +67,6 @@ public class Digraph
         }
     }
 
-<<<<<<< Updated upstream
-    /**
-     * Метод добавления ребра в граф и список ребер
-     */
-    public void addEdge(String vFrom, String vTo)
-=======
     /** Метод добавления вершины в граф
      * @param vertex -- новая вершина*/
     public void addVertex(Vertex vertex)
@@ -108,7 +78,6 @@ public class Digraph
      * @param vSource -- вершина-исток
      * @param vStock -- вершина-сток */
     public void addEdge(String vSource, String vStock)
->>>>>>> Stashed changes
     {
         Vertex vertexFrom = this.getElement(vSource);
         Vertex vertexTo = this.getElement(vStock);
@@ -152,7 +121,6 @@ public class Digraph
                 if(v == vertex)
                 {
                     getElement(key).removeVNext(vertex);
-                    System.out.println("HI");
                     break;
                 }
 
@@ -177,18 +145,10 @@ public class Digraph
         return false;
     }
 
-<<<<<<< Updated upstream
-
-    /**
-     * Метод получения списка вершин графа
-     */
-    public ArrayList<String> getVertexes()
-=======
     /** Метод получения списка вершин графа */
     public ArrayList<Vertex> getVertexes()
->>>>>>> Stashed changes
     {
-        return new ArrayList<String>(graph.keySet());
+        return new ArrayList<Vertex>(graph.values());
     }
 
     /** Метод получения списка ребер графа */
@@ -197,25 +157,10 @@ public class Digraph
         return edges;
     }
 
-<<<<<<< Updated upstream
-    /**
-     * Псевдо метод для обработки ошибок
-     */
-    public void gHasError(ErrorType e)
-    {
-        if(e == ErrorType.FOREST){
-            System.out.println("TIPO GRAPH IS A FOREST");
-        }
-
-        else if(e == ErrorType.LOOP){
-            System.out.println("TIPO GRAPH ETO LOOP");
-        }
-=======
     /** Псевдо метод для обработки ошибок */
     public void isALoop()
     {
        isLoop = true;
        System.out.println("isALoop");
->>>>>>> Stashed changes
     }
 }
