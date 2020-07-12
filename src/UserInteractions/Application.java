@@ -92,7 +92,6 @@ public class Application extends JFrame
             while (scanner.hasNextLine())
             {
                 String cur = scanner.nextLine();
-
                 if (cur.matches(edgeDataPattern))
                 {
                     try {
@@ -368,6 +367,7 @@ public class Application extends JFrame
     public Application()
     {
         frame = new JFrame("Топологическая сортировка");
+
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.getContentPane().setLayout(new BorderLayout());
 
@@ -381,6 +381,8 @@ public class Application extends JFrame
         /* Создание панели с холстом */
         createCanvas();
         canvas.drawProcess();
+
+
 
         frame.getContentPane().add(toolBar, BorderLayout.PAGE_START);
         frame.getContentPane().add(canvas, BorderLayout.CENTER);
