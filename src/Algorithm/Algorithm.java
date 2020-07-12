@@ -94,10 +94,18 @@ public class Algorithm
             if(vertex.getColor() == Color.WHITE)
                 helpSort(vertex);
         }
-        if(digraph.isLoop){
+        if(digraph.isLoop)
+        {
+            System.out.println("EMPTY");
+            for (String key: digraph.getMap().keySet())
+            {
+                digraph.getElement(key).setColor(Color.WHITE);
+            }
+            digraph.isLoop = false;
             return null;
         }
         while(!vStack.isEmpty())  sortResult.add(vStack.pop().getName());
+        System.out.println(sortResult);
         return sortResult;
     }
 
